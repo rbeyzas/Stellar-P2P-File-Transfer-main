@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, Button, Space } from 'antd';
 import { DownloadOutlined, CloseOutlined } from '@ant-design/icons';
 import { usePWA } from '../hooks/usePWA';
-
+// TODO: chrome da bu banner görünmüyor.
 const PWABanner: React.FC = () => {
   const { canInstall, isInstalled, installApp } = usePWA();
 

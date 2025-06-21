@@ -15,6 +15,7 @@ import {
   UploadFile,
   Tabs,
   Divider,
+  Progress,
 } from 'antd';
 import {
   FileOutlined,
@@ -242,6 +243,10 @@ export const HomePage: React.FC = () => {
 
   const [fileList, setFileList] = useAsyncState([] as UploadFile[]);
   const [sendLoading, setSendLoading] = useAsyncState(false);
+  const [batchProgress, setBatchProgress] = useState<{ [key: string]: number }>({});
+  const [batchStatus, setBatchStatus] = useState<{
+    [key: string]: 'pending' | 'sending' | 'completed' | 'failed';
+  }>({});
 
   const handleConnectOtherPeer = () => {
     connection.id != null
@@ -278,7 +283,7 @@ export const HomePage: React.FC = () => {
       dispatch(transferAction);
       transferId = transferAction.payload.id;
 
-      await PeerConnection.sendConnection(connection.selectedId, {
+      await PeerConnection.sendConnection(connection.selectedId!, {
         dataType: DataType.FILE,
         file: blob,
         fileName: file.name,
@@ -299,6 +304,137 @@ export const HomePage: React.FC = () => {
       if (transferId) {
         dispatch(failTransfer(transferId, 'Send failed'));
       }
+    }
+  };
+
+  const handleBatchUpload = async () => {
+    if (fileList.length === 0) {
+      message.warning('Please select files');
+      return;
+    }
+    if (!connection.selectedId) {
+      message.warning('Please select a connection');
+      return;
+    }
+
+    // Initialize batch status and progress
+    const initialStatus: { [key: string]: 'pending' | 'sending' | 'completed' | 'failed' } = {};
+    const initialProgress: { [key: string]: number } = {};
+
+    fileList.forEach((file: UploadFile) => {
+      initialStatus[file.uid] = 'pending';
+      initialProgress[file.uid] = 0;
+    });
+
+    setBatchStatus(initialStatus);
+    setBatchProgress(initialProgress);
+    setSendLoading(true);
+
+    const transferIds: { [key: string]: string } = {};
+    const files = fileList as unknown as File[];
+
+    try {
+      // Create transfer records for all files
+      for (const file of files) {
+        const transferAction = createTransferRecord(
+          file.name,
+          file.size,
+          file.type,
+          'sent',
+          connection.selectedId,
+        );
+
+        dispatch(transferAction);
+        // Use file name as key since File objects don't have uid
+        const fileKey = `${file.name}-${file.size}`;
+        transferIds[fileKey] = transferAction.payload.id;
+
+        // Update status to sending
+        setBatchStatus((prev) => ({ ...prev, [fileKey]: 'sending' }));
+      }
+
+      // Send files with progress simulation
+      const sendPromises = files.map(async (file, index) => {
+        const fileKey = `${file.name}-${file.size}`;
+
+        try {
+          const blob = new Blob([file], { type: file.type });
+
+          // Simulate progress for each file
+          const progressInterval = setInterval(() => {
+            setBatchProgress((prev) => {
+              const current = prev[fileKey] || 0;
+              if (current < 90) {
+                return { ...prev, [fileKey]: current + Math.random() * 10 };
+              }
+              return prev;
+            });
+          }, 200);
+
+          await PeerConnection.sendConnection(connection.selectedId!, {
+            dataType: DataType.FILE,
+            file: blob,
+            fileName: file.name,
+            fileType: file.type,
+          });
+
+          clearInterval(progressInterval);
+
+          // Mark as completed
+          setBatchProgress((prev) => ({ ...prev, [fileKey]: 100 }));
+          setBatchStatus((prev) => ({ ...prev, [fileKey]: 'completed' }));
+
+          // Complete transfer record
+          const transferId = transferIds[fileKey];
+          if (transferId) {
+            dispatch(completeTransfer(transferId));
+          }
+
+          // Add small delay between files to prevent overwhelming the connection
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        } catch (error) {
+          console.error(`Failed to send file ${file.name}:`, error);
+          setBatchStatus((prev) => ({ ...prev, [fileKey]: 'failed' }));
+
+          // Mark transfer as failed
+          if (transferIds[fileKey]) {
+            dispatch(failTransfer(transferIds[fileKey], `Failed to send ${file.name}`));
+          }
+        }
+      });
+
+      await Promise.allSettled(sendPromises);
+
+      const completedCount = Object.values(batchStatus).filter(
+        (status) => status === 'completed',
+      ).length;
+      const failedCount = Object.values(batchStatus).filter((status) => status === 'failed').length;
+
+      if (completedCount > 0) {
+        message.success(`Batch transfer completed! ${completedCount} files sent successfully.`);
+      }
+
+      if (failedCount > 0) {
+        message.warning(`${failedCount} files failed to send.`);
+      }
+    } catch (error) {
+      console.error('Batch transfer error:', error);
+      message.error('Batch transfer failed');
+
+      // Mark all pending transfers as failed
+      Object.entries(transferIds).forEach(([fileKey, transferId]) => {
+        if (batchStatus[fileKey] === 'pending' || batchStatus[fileKey] === 'sending') {
+          dispatch(failTransfer(transferId, 'Batch transfer failed'));
+        }
+      });
+    } finally {
+      setSendLoading(false);
+      // Clear file list after batch transfer
+      setTimeout(() => {
+        setFileList([]);
+        setBatchStatus({});
+        setBatchProgress({});
+      }, 2000);
     }
   };
 
@@ -699,12 +835,26 @@ export const HomePage: React.FC = () => {
                                   <Upload.Dragger
                                     className="file-transfer-dragger"
                                     fileList={fileList}
-                                    maxCount={1}
-                                    onRemove={() => setFileList([])}
-                                    beforeUpload={(file) => {
-                                      setFileList([file]);
+                                    maxCount={10}
+                                    multiple={true}
+                                    onRemove={(file: UploadFile) => {
+                                      const newFileList = fileList.filter(
+                                        (f: UploadFile) => f.uid !== file.uid,
+                                      );
+                                      setFileList(newFileList);
+                                    }}
+                                    beforeUpload={(file: File) => {
+                                      const uploadFile: UploadFile = {
+                                        uid: `${Date.now()}-${Math.random()}`,
+                                        name: file.name,
+                                        size: file.size,
+                                        type: file.type,
+                                        originFileObj: file as any,
+                                      };
+                                      setFileList((prev: UploadFile[]) => [...prev, uploadFile]);
                                       return false;
                                     }}
+                                    accept="*/*"
                                     style={{
                                       background: '#1a1a1a',
                                       border: `2px dashed ${stellarColors.gold}`,
@@ -728,33 +878,113 @@ export const HomePage: React.FC = () => {
                                           fontSize: '1.2rem',
                                         }}
                                       >
-                                        CLICK OR DRAG FILE
+                                        CLICK OR DRAG FILES
                                       </p>
                                       <p className="ant-upload-hint" style={{ color: '#999' }}>
-                                        Select the file you want to transfer.
+                                        Select multiple files for batch transfer (max 10 files).
                                       </p>
                                     </div>
                                   </Upload.Dragger>
-                                  <Button
-                                    type="primary"
-                                    onClick={handleUpload}
-                                    disabled={fileList.length === 0 || !connection.selectedId}
-                                    loading={sendLoading}
-                                    icon={<SendOutlined />}
-                                    size="large"
-                                    style={{
-                                      width: '100%',
-                                      height: 60,
-                                      background: stellarColors.gold,
-                                      border: 'none',
-                                      color: stellarColors.black,
-                                      fontWeight: 600,
-                                      marginTop: 24,
-                                      textTransform: 'uppercase',
-                                    }}
-                                  >
-                                    {sendLoading ? 'Sending...' : 'Send File'}
-                                  </Button>
+
+                                  {/* Batch Transfer Progress */}
+                                  {Object.keys(batchStatus).length > 0 && (
+                                    <div style={{ marginTop: 16 }}>
+                                      <Text
+                                        style={{
+                                          color: 'white',
+                                          marginBottom: 8,
+                                          display: 'block',
+                                        }}
+                                      >
+                                        Batch Transfer Progress:
+                                      </Text>
+                                      {fileList.map((file: UploadFile) => {
+                                        const fileKey = `${file.name}-${file.size}`;
+                                        const status = batchStatus[fileKey];
+                                        const progress = batchProgress[fileKey] || 0;
+
+                                        return (
+                                          <div key={file.uid} style={{ marginBottom: 8 }}>
+                                            <div
+                                              style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                marginBottom: 4,
+                                              }}
+                                            >
+                                              <Text style={{ color: 'white', fontSize: 12 }}>
+                                                {file.name}
+                                              </Text>
+                                              <Text style={{ color: 'white', fontSize: 12 }}>
+                                                {status === 'completed'
+                                                  ? '✓'
+                                                  : status === 'failed'
+                                                  ? '✗'
+                                                  : status === 'sending'
+                                                  ? '⟳'
+                                                  : '⏳'}
+                                              </Text>
+                                            </div>
+                                            <Progress
+                                              percent={progress}
+                                              size="small"
+                                              status={
+                                                status === 'failed'
+                                                  ? 'exception'
+                                                  : status === 'completed'
+                                                  ? 'success'
+                                                  : 'active'
+                                              }
+                                              strokeColor={stellarColors.gold}
+                                            />
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+
+                                  <Space style={{ width: '100%', marginTop: 24 }}>
+                                    <Button
+                                      type="primary"
+                                      onClick={
+                                        fileList.length === 1 ? handleUpload : handleBatchUpload
+                                      }
+                                      disabled={fileList.length === 0 || !connection.selectedId}
+                                      loading={sendLoading}
+                                      icon={<SendOutlined />}
+                                      size="large"
+                                      style={{
+                                        flex: 1,
+                                        height: 60,
+                                        background: stellarColors.gold,
+                                        border: 'none',
+                                        color: stellarColors.black,
+                                        fontWeight: 600,
+                                        textTransform: 'uppercase',
+                                      }}
+                                    >
+                                      {sendLoading
+                                        ? 'Sending...'
+                                        : fileList.length === 1
+                                        ? 'Send File'
+                                        : `Send ${fileList.length} Files`}
+                                    </Button>
+
+                                    {fileList.length > 1 && (
+                                      <Button
+                                        onClick={() => setFileList([])}
+                                        size="large"
+                                        style={{
+                                          height: 60,
+                                          background: 'transparent',
+                                          border: `1px solid ${stellarColors.gold}`,
+                                          color: stellarColors.gold,
+                                        }}
+                                      >
+                                        Clear
+                                      </Button>
+                                    )}
+                                  </Space>
                                 </div>
                               </Card>
                             )}
