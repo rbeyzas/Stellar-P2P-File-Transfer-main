@@ -42,6 +42,7 @@ export const startPeer: () => (dispatch: Dispatch) => Promise<void> = () => asyn
           dispatch(
             receiveMessage(peerId, {
               text: data.message || '',
+
               sender: 'peer',
               timestamp: Date.now(),
             }),

@@ -37,6 +37,7 @@ const ChatInterface: React.FC = () => {
 
     const messagePayload = {
       text: newMessage,
+
       sender: 'me' as const,
       timestamp: Date.now(),
     };

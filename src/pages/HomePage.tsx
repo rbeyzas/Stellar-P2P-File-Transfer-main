@@ -14,7 +14,15 @@ import {
   Upload,
   UploadFile,
 } from 'antd';
-import { FileOutlined, SendOutlined, CheckCircleOutlined, LinkOutlined } from '@ant-design/icons';
+import {
+  FileOutlined,
+  SendOutlined,
+  CheckCircleOutlined,
+  LinkOutlined,
+  SettingOutlined,
+  DisconnectOutlined,
+  WalletOutlined,
+} from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { startPeer, stopPeerSession } from '../store/peer/peerActions';
 import * as connectionAction from '../store/connection/connectionActions';
@@ -30,6 +38,7 @@ import {
   allowAllModules,
   XBULL_ID,
 } from '@creit.tech/stellar-wallets-kit';
+import ChatInterface from '../components/ChatInterface';
 
 const { Title, Text } = Typography;
 type MenuItem = Required<MenuProps>['items'][number];
@@ -394,9 +403,11 @@ export const HomePage: React.FC = () => {
                   </Col>
                   <Col>
                     <Space>
-                      <Button onClick={() => setSettingsOpen(true)}>Settings</Button>
+                      <Button onClick={() => setSettingsOpen(true)}>
+                        <SettingOutlined /> Settings
+                      </Button>
                       <Button danger onClick={disconnectWallet}>
-                        Disconnect
+                        <DisconnectOutlined /> Disconnect
                       </Button>
                     </Space>
                   </Col>
@@ -404,6 +415,7 @@ export const HomePage: React.FC = () => {
               </Card>
 
               <Row gutter={[24, 24]}>
+                {/* Left Column */}
                 <Col xs={24} lg={12}>
                   <Space direction="vertical" size="large" style={{ width: '100%' }}>
                     {/* Connection Setup */}
@@ -461,44 +473,13 @@ export const HomePage: React.FC = () => {
                                 Check
                               </Button>
                             </Space.Compact>
-                          </div>
-                          {hasPermission && (
-                            <div>
-                              <Text
-                                strong
-                                style={{
-                                  fontFamily: "'Inter', sans-serif",
-                                  textTransform: 'uppercase',
-                                }}
-                              >
-                                Peer ID
+                            {hasPermission && (
+                              <Text type="secondary" style={{ marginTop: 8, display: 'block' }}>
+                                Permission granted. You can now connect with this user via the chat
+                                interface.
                               </Text>
-                              <Space.Compact style={{ width: '100%', marginTop: 8 }}>
-                                <Input
-                                  placeholder="Enter peer ID..."
-                                  value={connection.id}
-                                  onChange={(e) =>
-                                    dispatch(connectionAction.changeConnectionInput(e.target.value))
-                                  }
-                                  size="large"
-                                  style={{ borderRadius: 0 }}
-                                />
-                                <Button
-                                  type="primary"
-                                  loading={connection.loading}
-                                  onClick={handleConnectOtherPeer}
-                                  style={{
-                                    background: stellarColors.black,
-                                    color: stellarColors.gold,
-                                    borderRadius: 0,
-                                  }}
-                                  size="large"
-                                >
-                                  Connect
-                                </Button>
-                              </Space.Compact>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </Space>
                       </Card>
                     )}
@@ -538,37 +519,19 @@ export const HomePage: React.FC = () => {
                   </Space>
                 </Col>
 
+                {/* Right Column */}
                 <Col xs={24} lg={12}>
-                  {/* File Transfer */}
-                  {peer.started && (
-                    <Card
-                      bordered={false}
-                      style={{
-                        background: stellarColors.black,
-                        color: 'white',
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                      }}
-                    >
-                      <Title
-                        level={4}
+                  <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                    {/* File Transfer */}
+                    {peer.started && (
+                      <Card
+                        bordered={false}
                         style={{
-                          fontFamily: "'Anton', sans-serif",
+                          background: stellarColors.black,
                           color: 'white',
-                          textTransform: 'uppercase',
-                          margin: 0,
-                        }}
-                      >
-                        Send File
-                      </Title>
-                      <div
-                        style={{
-                          flex: 1,
+                          height: '100%',
                           display: 'flex',
                           flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          marginTop: 24,
                         }}
                       >
                         <Upload.Dragger
@@ -580,57 +543,79 @@ export const HomePage: React.FC = () => {
                             setFileList([file]);
                             return false;
                           }}
+
                           style={{
-                            background: '#1a1a1a',
-                            border: `2px dashed ${stellarColors.gold}`,
                             flex: 1,
                             display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <div>
-                            <p className="ant-upload-drag-icon">
-                              <FileOutlined style={{ color: stellarColors.gold, fontSize: 48 }} />
-                            </p>
-                            <p
-                              className="ant-upload-text"
-                              style={{
-                                color: 'white',
-                                fontFamily: "'Anton', sans-serif",
-                                fontSize: '1.2rem',
-                              }}
-                            >
-                              CLICK OR DRAG FILE
-                            </p>
-                            <p className="ant-upload-hint" style={{ color: '#999' }}>
-                              Select the file you want to transfer.
-                            </p>
-                          </div>
-                        </Upload.Dragger>
-                        <Button
-                          type="primary"
-                          onClick={handleUpload}
-                          disabled={fileList.length === 0 || !connection.selectedId}
-                          loading={sendLoading}
-                          icon={<SendOutlined />}
-                          size="large"
-                          style={{
-                            width: '100%',
-                            height: 60,
-                            background: stellarColors.gold,
-                            border: 'none',
-                            color: stellarColors.black,
-                            fontWeight: 600,
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
                             marginTop: 24,
-                            textTransform: 'uppercase',
                           }}
                         >
-                          {sendLoading ? 'Sending...' : 'Send File'}
-                        </Button>
-                      </div>
-                    </Card>
-                  )}
+                          <Upload.Dragger
+                            className="file-transfer-dragger"
+                            fileList={fileList}
+                            maxCount={1}
+                            onRemove={() => setFileList([])}
+                            beforeUpload={(file) => {
+                              setFileList([file]);
+                              return false;
+                            }}
+                            style={{
+                              background: '#1a1a1a',
+                              border: `2px dashed ${stellarColors.gold}`,
+                              flex: 1,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <div>
+                              <p className="ant-upload-drag-icon">
+                                <FileOutlined style={{ color: stellarColors.gold, fontSize: 48 }} />
+                              </p>
+                              <p
+                                className="ant-upload-text"
+                                style={{
+                                  color: 'white',
+                                  fontFamily: "'Anton', sans-serif",
+                                  fontSize: '1.2rem',
+                                }}
+                              >
+                                CLICK OR DRAG FILE
+                              </p>
+                              <p className="ant-upload-hint" style={{ color: '#999' }}>
+                                Select the file you want to transfer.
+                              </p>
+                            </div>
+                          </Upload.Dragger>
+                          <Button
+                            type="primary"
+                            onClick={handleUpload}
+                            disabled={fileList.length === 0 || !connection.selectedId}
+                            loading={sendLoading}
+                            icon={<SendOutlined />}
+                            size="large"
+                            style={{
+                              width: '100%',
+                              height: 60,
+                              background: stellarColors.gold,
+                              border: 'none',
+                              color: stellarColors.black,
+                              fontWeight: 600,
+                              marginTop: 24,
+                              textTransform: 'uppercase',
+                            }}
+                          >
+                            {sendLoading ? 'Sending...' : 'Send File'}
+                          </Button>
+                        </div>
+                      </Card>
+                    )}
+
+                    {/* Chat Interface */}
+                    {peer.started && <ChatInterface />}
+                  </Space>
                 </Col>
               </Row>
 
