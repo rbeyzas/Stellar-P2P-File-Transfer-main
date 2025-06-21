@@ -21,6 +21,8 @@ import * as connectionAction from '../store/connection/connectionActions';
 import { DataType, PeerConnection } from '../helpers/peer';
 import { useAsyncState } from '../helpers/hooks';
 import * as Client from 'file-transfer';
+import ChatInterface from '../components/ChatInterface';
+import PasskeyWallet from '../components/PasskeyWallet';
 
 import {
   StellarWalletsKit,
@@ -301,56 +303,73 @@ export const HomePage: React.FC = () => {
 
           {/* Wallet Connection Section */}
           {!address && (
-            <div
-              style={{
-                background: stellarColors.gold,
-                padding: '60px 40px',
-                textAlign: 'center',
-              }}
-            >
-              <Title
-                level={2}
+            <>
+              <div
                 style={{
-                  fontFamily: "'Anton', sans-serif",
-                  color: 'black',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
+                  background: stellarColors.gold,
+                  padding: '60px 40px',
+                  textAlign: 'center',
+                  marginBottom: 24,
                 }}
               >
-                DIGITAL WALLETS
-              </Title>
-              <Text
-                style={{
-                  fontFamily: "'Lora', serif",
-                  color: 'rgba(0,0,0,0.7)',
-                  fontSize: 16,
-                  display: 'block',
-                  marginBottom: 40,
-                  maxWidth: '400px',
-                  margin: '0 auto 40px auto',
+                <Title
+                  level={2}
+                  style={{
+                    fontFamily: "'Anton', sans-serif",
+                    color: 'black',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  DIGITAL WALLETS
+                </Title>
+                <Text
+                  style={{
+                    fontFamily: "'Lora', serif",
+                    color: 'rgba(0,0,0,0.7)',
+                    fontSize: 16,
+                    display: 'block',
+                    marginBottom: 40,
+                    maxWidth: '400px',
+                    margin: '0 auto 40px auto',
+                  }}
+                >
+                  Embark on your Stellar journey. Connect your wallet to begin.
+                </Text>
+                <Button
+                  onClick={connectWallet}
+                  disabled={connecting}
+                  type="primary"
+                  size="large"
+                  style={{
+                    height: 60,
+                    padding: '0 50px',
+                    fontSize: 18,
+                    background: stellarColors.black,
+                    border: 'none',
+                    color: stellarColors.gold,
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {connecting ? 'Connecting...' : 'Connect Traditional Wallet'}
+                </Button>
+              </div>
+
+              {/* Passkey Wallet Option */}
+              <PasskeyWallet
+                onWalletConnected={(passkeyAddress) => {
+                  setAddress(passkeyAddress);
+                  dispatch(startPeer());
                 }}
-              >
-                Embark on your Stellar journey. Connect your wallet to begin.
-              </Text>
-              <Button
-                onClick={connectWallet}
-                disabled={connecting}
-                type="primary"
-                size="large"
-                style={{
-                  height: 60,
-                  padding: '0 50px',
-                  fontSize: 18,
-                  background: stellarColors.black,
-                  border: 'none',
-                  color: stellarColors.gold,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
+                onWalletDisconnected={() => {
+                  setAddress(null);
+                  setHasPermission(false);
+                  setRecipientAddress('');
+                  dispatch(stopPeerSession());
                 }}
-              >
-                {connecting ? 'Connecting...' : 'Connect Wallet'}
-              </Button>
-            </div>
+              />
+            </>
           )}
 
           {/* Main Application */}
@@ -554,6 +573,7 @@ export const HomePage: React.FC = () => {
                       >
                         <Upload.Dragger
                           fileList={fileList}
+                          className="file-transfer-dragger"
                           maxCount={1}
                           onRemove={() => setFileList([])}
                           beforeUpload={(file) => {
@@ -613,6 +633,15 @@ export const HomePage: React.FC = () => {
                   )}
                 </Col>
               </Row>
+
+              {/* Chat Interface Row */}
+              {peer.started && (
+                <Row style={{ marginTop: 24 }}>
+                  <Col xs={24}>
+                    <ChatInterface />
+                  </Col>
+                </Row>
+              )}
 
               {/* Settings Modal */}
               <Modal

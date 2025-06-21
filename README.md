@@ -9,7 +9,7 @@
 
 **Secure • Decentralized • Permission-Based File Transfer**
 
-*A modern peer-to-peer file transfer application built on the Stellar blockchain with beautiful UI and advanced permission management.*
+_A modern peer-to-peer file transfer application built on the Stellar blockchain with beautiful UI and advanced permission management._
 
 [🚀 Getting Started](#getting-started) • [✨ Features](#features) • [🛠️ Installation](#installation) • [📖 Usage](#usage)
 
@@ -20,25 +20,40 @@
 ## ✨ Features
 
 ### 🔐 **Blockchain-Powered Security**
+
 - **Smart Contract Permissions**: Files can only be transferred between wallets with explicit blockchain permissions
 - **Stellar Network Integration**: Built on Stellar's robust and fast blockchain infrastructure
 - **Wallet Authentication**: Secure wallet connection using Stellar Wallets Kit
 
 ### 🌐 **Peer-to-Peer Transfer**
+
 - **Direct File Transfer**: Files are transferred directly between peers without intermediary servers
 - **WebRTC Technology**: Uses modern WebRTC for fast and secure peer-to-peer connections
 - **Real-time Communication**: Instant connection status and transfer progress
 
 ### 🎨 **Modern User Interface**
+
 - **Beautiful Design**: Modern gradient-based UI with smooth animations
 - **Responsive Layout**: Works perfectly on desktop and mobile devices
 - **Intuitive UX**: Simple and user-friendly interface for all skill levels
 - **Real-time Feedback**: Live status updates and progress indicators
 
 ### 🛡️ **Permission Management**
+
 - **Grant Permissions**: Allow specific wallets to send you files
 - **Revoke Access**: Remove file transfer permissions at any time
 - **Permission Verification**: Automatic permission checking before file transfers
+
+### 🔐 **Passkey Authentication**
+
+- **Biometric Security**: Use fingerprint, face ID, or device PIN
+- **No Private Keys**: Secure authentication without key management
+- **Smart Wallet**: Stellar smart contract-based wallet
+
+### 📱 **Traditional Wallet Support**
+
+- **XBULL Integration**: Connect with XBULL wallet
+- **Familiar Experience**: Traditional wallet connection flow
 
 ---
 
@@ -53,29 +68,55 @@
 ### 🛠️ Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Mantis322/stellar-p2p-file-transfer.git](https://github.com/Mantis322/Stellar-P2P-File-Transfer.git
    cd Stellar-P2P-File-Transfer
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
-3. **Build the file-transfer package**
+3. **Set up environment variables**
+   ```bash
+   cp env.example .env
+   ```
+
+Edit `.env` with your configuration:
+
+```env
+# Stellar Testnet Configuration
+REACT_APP_PUBLIC_rpcUrl=https://soroban-testnet.stellar.org:443
+REACT_APP_PUBLIC_networkPassphrase=Test SDF Network ; September 2015
+REACT_APP_PUBLIC_walletWasmHash=default_hash
+
+# Launchtube Configuration (optional)
+REACT_APP_PUBLIC_launchtubeUrl=https://launchtube.stellar.org
+REACT_APP_PUBLIC_launchtubeJwt=your_launchtube_jwt_here
+
+# Mercury Configuration (optional)
+REACT_APP_PUBLIC_mercuryUrl=https://test.mercurydata.app
+REACT_APP_PUBLIC_mercuryJwt=your_mercury_jwt_here
+```
+
+4. **Build the file-transfer package**
+
    ```bash
    cd packages/file-transfer
    npm run build
    cd ../..
    ```
 
-4. **Start the development server**
+5. **Start the development server**
+
    ```bash
    npm start
    ```
 
-5. **Open your browser**
+6. **Open your browser**
    ```
    http://localhost:3000
    ```
@@ -85,16 +126,19 @@
 ## 📖 Usage
 
 ### 🔗 **Connect Your Wallet**
+
 1. Click **"Connect Wallet"** button
 2. Select your preferred Stellar wallet
 3. Authorize the connection
 
 ### 🤝 **Grant Permissions**
+
 1. Click **"Settings"** button
 2. Enter the wallet address you want to grant permission to
 3. Click **"Grant"** and confirm the transaction
 
 ### 📤 **Send Files**
+
 1. Enter the **recipient's wallet address**
 2. Click **"Check Permission"** to verify access
 3. Enter the **recipient's peer ID**
@@ -102,6 +146,7 @@
 5. Click **"Send File"** to transfer
 
 ### 📥 **Receive Files**
+
 1. Share your **Peer ID** with the sender
 2. Wait for incoming connections
 3. Files will be automatically downloaded when received
@@ -133,14 +178,14 @@ stellar-p2p-file-transfer/
 
 ## 🔧 Technology Stack
 
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| **React** | Frontend Framework | ^18.0 |
-| **TypeScript** | Type Safety | ^4.9 |
-| **Stellar SDK** | Blockchain Integration | Latest |
-| **WebRTC** | P2P Communication | Native |
-| **Ant Design** | UI Components | ^5.0 |
-| **Redux Toolkit** | State Management | ^1.9 |
+| Technology        | Purpose                | Version |
+| ----------------- | ---------------------- | ------- |
+| **React**         | Frontend Framework     | ^18.0   |
+| **TypeScript**    | Type Safety            | ^4.9    |
+| **Stellar SDK**   | Blockchain Integration | Latest  |
+| **WebRTC**        | P2P Communication      | Native  |
+| **Ant Design**    | UI Components          | ^5.0    |
+| **Redux Toolkit** | State Management       | ^1.9    |
 
 ---
 
@@ -156,11 +201,10 @@ We welcome contributions! Please feel free to submit a Pull Request.
 
 ---
 
-
 <div align="center">
 
 **Made with ❤️ and ⭐ Stellar**
 
-*If you found this project helpful, please give it a ⭐!*
+_If you found this project helpful, please give it a ⭐!_
 
 </div>
