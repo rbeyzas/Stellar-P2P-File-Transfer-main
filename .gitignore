@@ -3,8 +3,9 @@
 # dependencies
 /.idea
 /node_modules
-src/node_modules
-
+/contracts/file-transfer/target
+/contracts/file-transfer/target/wasm32v1-none/release/file_transfer.wasm
+/server/node_modules
 /.pnp
 .pnp.js
 
