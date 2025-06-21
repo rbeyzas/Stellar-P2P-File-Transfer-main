@@ -29,7 +29,6 @@ import * as connectionAction from '../store/connection/connectionActions';
 import { DataType, PeerConnection } from '../helpers/peer';
 import { useAsyncState } from '../helpers/hooks';
 import * as Client from 'file-transfer';
-import ChatInterface from '../components/ChatInterface';
 import PasskeyWallet from '../components/PasskeyWallet';
 
 import {
@@ -534,16 +533,7 @@ export const HomePage: React.FC = () => {
                           flexDirection: 'column',
                         }}
                       >
-                        <Upload.Dragger
-                          fileList={fileList}
-                          className="file-transfer-dragger"
-                          maxCount={1}
-                          onRemove={() => setFileList([])}
-                          beforeUpload={(file) => {
-                            setFileList([file]);
-                            return false;
-                          }}
-
+                        <div
                           style={{
                             flex: 1,
                             display: 'flex',
