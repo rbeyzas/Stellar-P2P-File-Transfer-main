@@ -1,6 +1,7 @@
 {
-  "short_name": "Stellar P2P File Transfer",
-  "name": "Stellar P2P File Transfer",
+  "short_name": "Stellar Transfer",
+  "name": "Stellar P2P File Transfer Hub",
+  "description": "Secure, decentralized file sharing powered by the Stellar network with biometric authentication",
   "icons": [
     {
       "src": "favicon.ico",
@@ -16,10 +17,60 @@
       "src": "logo512.png",
       "type": "image/png",
       "sizes": "512x512"
+    },
+    {
+      "src": "logo-maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#FDDA24",
+  "background_color": "#F6F7F8",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["finance", "productivity", "utilities"],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshot2.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Send File",
+      "short_name": "Send",
+      "description": "Quickly send a file to a peer",
+      "url": "/?action=send",
+      "icons": [
+        {
+          "src": "send-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Token System",
+      "short_name": "Tokens",
+      "description": "Manage your Stellar tokens",
+      "url": "/?action=tokens",
+      "icons": [
+        {
+          "src": "token-icon.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
 }

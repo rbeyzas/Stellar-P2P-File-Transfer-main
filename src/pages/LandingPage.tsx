@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Typography, Space, Card, Row, Col } from 'antd';
+import { Button, Typography, Card, Row, Col } from 'antd';
 import {
   SendOutlined,
   RocketOutlined,

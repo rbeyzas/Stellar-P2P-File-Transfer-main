@@ -6,10 +6,11 @@
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![WebRTC](https://img.shields.io/badge/WebRTC-333333?style=for-the-badge&logo=webrtc&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)
 
-**Secure • Decentralized • Permission-Based File Transfer**
+**Secure • Decentralized • Permission-Based File Transfer with Token System**
 
-_A modern peer-to-peer file transfer application built on the Stellar blockchain with beautiful UI and advanced permission management._
+_A modern peer-to-peer file transfer application built on the Stellar blockchain with beautiful UI, advanced permission management, token system, and mobile PWA support._
 
 [🚀 Getting Started](#getting-started) • [✨ Features](#features) • [🛠️ Installation](#installation) • [📖 Usage](#usage)
 
@@ -31,6 +32,14 @@ _A modern peer-to-peer file transfer application built on the Stellar blockchain
 - **WebRTC Technology**: Uses modern WebRTC for fast and secure peer-to-peer connections
 - **Real-time Communication**: Instant connection status and transfer progress
 
+### 🪙 **Stellar Token System**
+
+- **XLM Integration**: Native Stellar Lumens (XLM) support
+- **Custom Tokens**: Create and manage custom tokens on the Stellar network
+- **Token Balances**: Real-time token balance tracking
+- **Payment System**: Send payments in XLM and other Stellar assets
+- **Transaction History**: Complete transaction history and tracking
+
 ### 🎨 **Modern User Interface**
 
 - **Beautiful Design**: Modern gradient-based UI with smooth animations
@@ -49,6 +58,14 @@ _A modern peer-to-peer file transfer application built on the Stellar blockchain
 - **Biometric Security**: Use fingerprint, face ID, or device PIN
 - **No Private Keys**: Secure authentication without key management
 - **Smart Wallet**: Stellar smart contract-based wallet
+
+### 📱 **Mobile PWA Support**
+
+- **Progressive Web App**: Install as a native mobile app
+- **Offline Support**: Works offline with cached resources
+- **Push Notifications**: Real-time notifications for file transfers
+- **Background Sync**: Automatic sync when connection is restored
+- **Mobile Optimized**: Touch-friendly interface for mobile devices
 
 ### 📱 **Traditional Wallet Support**
 
@@ -151,6 +168,21 @@ REACT_APP_PUBLIC_mercuryJwt=your_mercury_jwt_here
 2. Wait for incoming connections
 3. Files will be automatically downloaded when received
 
+### 🪙 **Token System**
+
+1. Navigate to the **"Token System"** tab
+2. View your **token balances** (XLM, USDC, EURT, etc.)
+3. **Send payments** to other Stellar addresses
+4. **Create custom tokens** on the Stellar network
+5. View **transaction history**
+
+### 📱 **Mobile PWA**
+
+1. **Install the app** on your mobile device
+2. **Enable notifications** for file transfer alerts
+3. **Use offline** - the app works without internet
+4. **Background sync** automatically syncs when online
+
 ---
 
 ## 🏗️ Project Structure
@@ -162,9 +194,19 @@ stellar-p2p-file-transfer/
 │       ├── src/
 │       │   └── index.ts        # Contract client wrapper
 │       └── package.json
-├── 🌐 public/                 # Static assets
+├── 🌐 public/                 # Static assets & PWA files
+│   ├── manifest.json          # PWA manifest
+│   ├── sw.js                  # Service worker
+│   └── icons/                 # PWA icons
 ├── ⚛️  src/
 │   ├── App.tsx                 # Main application component
+│   ├── components/             # React components
+│   │   ├── PasskeyWallet.tsx   # Passkey authentication
+│   │   ├── TokenSystem.tsx     # Stellar token management
+│   │   ├── PWABanner.tsx       # PWA install banner
+│   │   └── ChatInterface.tsx   # Real-time chat
+│   ├── hooks/                  # Custom React hooks
+│   │   └── usePWA.ts          # PWA functionality
 │   ├── helpers/                # Utility functions
 │   │   ├── peer.ts            # WebRTC peer connection logic
 │   │   └── hooks.ts           # Custom React hooks
@@ -186,6 +228,32 @@ stellar-p2p-file-transfer/
 | **WebRTC**        | P2P Communication      | Native  |
 | **Ant Design**    | UI Components          | ^5.0    |
 | **Redux Toolkit** | State Management       | ^1.9    |
+| **PWA**           | Mobile App Support     | Native  |
+
+---
+
+## 🏆 Competition Features
+
+### **Stellar Ecosystem Integration**
+
+- ✅ **Passkey Authentication**: Biometric security with Stellar smart wallets
+- ✅ **Token System**: XLM and custom token management
+- ✅ **Smart Contracts**: Permission-based file transfers
+- ✅ **Soroban Integration**: Advanced smart contract capabilities
+
+### **Consumer App Criteria**
+
+- ✅ **Mobile PWA**: Native mobile app experience
+- ✅ **Real-world Impact**: Practical file sharing solution
+- ✅ **User Experience**: Intuitive and beautiful interface
+- ✅ **Technical Implementation**: Modern web technologies
+
+### **Advanced Features**
+
+- ✅ **Micro-payments**: Token-based payment system
+- ✅ **Reputation System**: Permission management
+- ✅ **Offline Support**: PWA with service worker
+- ✅ **Push Notifications**: Real-time alerts
 
 ---
 

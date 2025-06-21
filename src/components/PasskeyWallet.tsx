@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, Typography, Space, message, Alert } from 'antd';
-import { KeyOutlined, WalletOutlined, DisconnectOutlined } from '@ant-design/icons';
+import { KeyOutlined, WalletOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 

@@ -13,6 +13,8 @@ import {
   Typography,
   Upload,
   UploadFile,
+  Tabs,
+  Divider,
 } from 'antd';
 import {
   FileOutlined,
@@ -30,6 +32,8 @@ import { DataType, PeerConnection } from '../helpers/peer';
 import { useAsyncState } from '../helpers/hooks';
 import * as Client from 'file-transfer';
 import PasskeyWallet from '../components/PasskeyWallet';
+import TokenSystem from '../components/TokenSystem';
+import PWABanner from '../components/PWABanner';
 
 import {
   StellarWalletsKit,
@@ -277,6 +281,9 @@ export const HomePage: React.FC = () => {
         fontFamily: "'Inter', sans-serif",
       }}
     >
+      {/* PWA Install Banner */}
+      <PWABanner />
+
       <Row justify="center" align="top">
         <Col xs={24} sm={24} md={22} lg={20} xl={18}>
           {/* Header */}
@@ -413,201 +420,335 @@ export const HomePage: React.FC = () => {
                 </Row>
               </Card>
 
-              <Row gutter={[24, 24]}>
-                {/* Left Column */}
-                <Col xs={24} lg={12}>
-                  <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                    {/* Connection Setup */}
-                    {peer.started && (
-                      <Card
-                        title={
-                          <Title
-                            level={4}
-                            style={{
-                              fontFamily: "'Anton', sans-serif",
-                              textTransform: 'uppercase',
-                              margin: 0,
-                            }}
-                          >
-                            Connection Setup
-                          </Title>
-                        }
-                        bordered={false}
-                        style={{ background: 'white', height: '100%' }}
+              {/* Main Application Tabs */}
+              <Tabs
+                defaultActiveKey="file-transfer"
+                items={[
+                  {
+                    key: 'file-transfer',
+                    label: (
+                      <span
+                        style={{ fontFamily: "'Anton', sans-serif", textTransform: 'uppercase' }}
                       >
-                        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                          <div>
-                            <Text
-                              strong
-                              style={{
-                                fontFamily: "'Inter', sans-serif",
-                                textTransform: 'uppercase',
-                              }}
-                            >
-                              Recipient's Wallet Address
-                            </Text>
-                            <Space.Compact style={{ width: '100%', marginTop: 8 }}>
-                              <Input
-                                placeholder="Enter wallet address..."
-                                value={recipientAddress}
-                                onChange={(e) => {
-                                  setRecipientAddress(e.target.value);
-                                  setHasPermission(false);
-                                }}
-                                size="large"
-                                style={{ borderRadius: 0 }}
-                              />
-                              <Button
-                                type="primary"
-                                loading={checkingPermission}
-                                onClick={() => checkPermission(recipientAddress)}
-                                disabled={!recipientAddress.trim()}
+                        <FileOutlined style={{ marginRight: 8 }} />
+                        File Transfer
+                      </span>
+                    ),
+                    children: (
+                      <Row gutter={[24, 24]}>
+                        {/* Left Column */}
+                        <Col xs={24} lg={12}>
+                          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                            {/* Connection Setup */}
+
+                            {peer.started && (
+                              <Card
+                                title={
+                                  <Title
+                                    level={4}
+                                    style={{
+                                      fontFamily: "'Anton', sans-serif",
+                                      textTransform: 'uppercase',
+                                      margin: 0,
+                                    }}
+                                  >
+                                    Connection Setup
+                                  </Title>
+                                }
+                                bordered={false}
+                                style={{ background: 'white', height: '100%' }}
+                              >
+                                {/* Recipient's Wallet Address */}
+                                <div>
+                                  <Text
+                                    strong
+                                    style={{
+                                      fontFamily: "'Inter', sans-serif",
+                                      textTransform: 'uppercase',
+                                    }}
+                                  >
+                                    Recipient's Wallet Address
+                                  </Text>
+                                  <Space.Compact style={{ width: '100%', marginTop: 8 }}>
+                                    <Input
+                                      placeholder="Enter wallet address..."
+                                      value={recipientAddress}
+                                      onChange={(e) => {
+                                        setRecipientAddress(e.target.value);
+                                        setHasPermission(false);
+                                      }}
+                                      size="large"
+                                      style={{ borderRadius: 0 }}
+                                    />
+                                    <Button
+                                      type="primary"
+                                      loading={checkingPermission}
+                                      onClick={() => checkPermission(recipientAddress)}
+                                      disabled={!recipientAddress.trim()}
+                                      style={{
+                                        background: stellarColors.black,
+                                        color: stellarColors.gold,
+                                        borderRadius: 0,
+                                      }}
+                                      size="large"
+                                    >
+                                      Check
+                                    </Button>
+                                  </Space.Compact>
+                                  {hasPermission && (
+                                    <Text
+                                      type="secondary"
+                                      style={{ marginTop: 8, display: 'block' }}
+                                    >
+                                      Permission granted. You can now connect with this user via the
+                                      chat interface.
+                                    </Text>
+                                  )}
+                                </div>
+                                <Divider />
+
+                                <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                                  {/* Your Peer ID */}
+                                  <div>
+                                    <Text
+                                      strong
+                                      style={{
+                                        fontFamily: "'Inter', sans-serif",
+                                        textTransform: 'uppercase',
+                                      }}
+                                    >
+                                      Your Peer ID
+                                    </Text>
+                                    <Space.Compact style={{ width: '100%', marginTop: 8 }}>
+                                      <Input
+                                        value={peer.id || 'Generating...'}
+                                        readOnly
+                                        size="large"
+                                        style={{ borderRadius: 0 }}
+                                      />
+                                      <Button
+                                        onClick={() => {
+                                          if (peer.id) {
+                                            navigator.clipboard.writeText(peer.id);
+                                            message.success('Peer ID copied to clipboard!');
+                                          }
+                                        }}
+                                        disabled={!peer.id}
+                                        style={{
+                                          background: stellarColors.gold,
+                                          color: stellarColors.black,
+                                          borderRadius: 0,
+                                        }}
+                                        size="large"
+                                      >
+                                        Copy
+                                      </Button>
+                                    </Space.Compact>
+                                    <Text
+                                      type="secondary"
+                                      style={{ marginTop: 8, display: 'block' }}
+                                    >
+                                      Share this ID with others to establish P2P connections.
+                                    </Text>
+                                  </div>
+
+                                  <Divider />
+
+                                  {/* Connect to Peer */}
+                                  <div>
+                                    <Text
+                                      strong
+                                      style={{
+                                        fontFamily: "'Inter', sans-serif",
+                                        textTransform: 'uppercase',
+                                      }}
+                                    >
+                                      Connect to Peer
+                                    </Text>
+                                    <Space.Compact style={{ width: '100%', marginTop: 8 }}>
+                                      <Input
+                                        placeholder="Enter peer ID..."
+                                        value={connection.id}
+                                        onChange={(e) =>
+                                          dispatch(
+                                            connectionAction.changeConnectionInput(e.target.value),
+                                          )
+                                        }
+                                        size="large"
+                                        style={{ borderRadius: 0 }}
+                                      />
+                                      <Button
+                                        type="primary"
+                                        loading={connection.loading}
+                                        onClick={handleConnectOtherPeer}
+                                        style={{
+                                          background: stellarColors.black,
+                                          color: stellarColors.gold,
+                                          borderRadius: 0,
+                                        }}
+                                        size="large"
+                                      >
+                                        Connect
+                                      </Button>
+                                    </Space.Compact>
+                                    <Text
+                                      type="secondary"
+                                      style={{ marginTop: 8, display: 'block' }}
+                                    >
+                                      Enter another user's Peer ID to establish a P2P connection.
+                                    </Text>
+                                  </div>
+                                </Space>
+                              </Card>
+                            )}
+
+                            {/* Active Connections */}
+                            {peer.started && (
+                              <Card
+                                title={
+                                  <Title
+                                    level={4}
+                                    style={{
+                                      fontFamily: "'Anton', sans-serif",
+                                      textTransform: 'uppercase',
+                                      margin: 0,
+                                    }}
+                                  >
+                                    Active Connections
+                                  </Title>
+                                }
+                                bordered={false}
+                                style={{ background: 'white', height: '100%' }}
+                              >
+                                {connection.list.length > 0 ? (
+                                  <Menu
+                                    selectedKeys={
+                                      connection.selectedId ? [connection.selectedId] : []
+                                    }
+                                    onSelect={(info: { key: string }) =>
+                                      dispatch(connectionAction.selectItem(info.key))
+                                    }
+                                    items={connection.list.map((e) =>
+                                      getItem(e, e, <LinkOutlined />),
+                                    )}
+                                    mode="vertical"
+                                  />
+                                ) : (
+                                  <Text type="secondary">Waiting for connections...</Text>
+                                )}
+                              </Card>
+                            )}
+                          </Space>
+                        </Col>
+
+                        {/* Right Column */}
+                        <Col xs={24} lg={12}>
+                          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                            {/* File Transfer */}
+                            {peer.started && (
+                              <Card
+                                bordered={false}
                                 style={{
                                   background: stellarColors.black,
-                                  color: stellarColors.gold,
-                                  borderRadius: 0,
-                                }}
-                                size="large"
-                              >
-                                Check
-                              </Button>
-                            </Space.Compact>
-                            {hasPermission && (
-                              <Text type="secondary" style={{ marginTop: 8, display: 'block' }}>
-                                Permission granted. You can now connect with this user via the chat
-                                interface.
-                              </Text>
-                            )}
-                          </div>
-                        </Space>
-                      </Card>
-                    )}
-
-                    {/* Active Connections */}
-                    {peer.started && (
-                      <Card
-                        title={
-                          <Title
-                            level={4}
-                            style={{
-                              fontFamily: "'Anton', sans-serif",
-                              textTransform: 'uppercase',
-                              margin: 0,
-                            }}
-                          >
-                            Active Connections
-                          </Title>
-                        }
-                        bordered={false}
-                        style={{ background: 'white', height: '100%' }}
-                      >
-                        {connection.list.length > 0 ? (
-                          <Menu
-                            selectedKeys={connection.selectedId ? [connection.selectedId] : []}
-                            onSelect={(info: { key: string }) =>
-                              dispatch(connectionAction.selectItem(info.key))
-                            }
-                            items={connection.list.map((e) => getItem(e, e, <LinkOutlined />))}
-                            mode="vertical"
-                          />
-                        ) : (
-                          <Text type="secondary">Waiting for connections...</Text>
-                        )}
-                      </Card>
-                    )}
-                  </Space>
-                </Col>
-
-                {/* Right Column */}
-                <Col xs={24} lg={12}>
-                  <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                    {/* File Transfer */}
-                    {peer.started && (
-                      <Card
-                        bordered={false}
-                        style={{
-                          background: stellarColors.black,
-                          color: 'white',
-                          height: '100%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                        }}
-                      >
-                        <div
-                          style={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            marginTop: 24,
-                          }}
-                        >
-                          <Upload.Dragger
-                            className="file-transfer-dragger"
-                            fileList={fileList}
-                            maxCount={1}
-                            onRemove={() => setFileList([])}
-                            beforeUpload={(file) => {
-                              setFileList([file]);
-                              return false;
-                            }}
-                            style={{
-                              background: '#1a1a1a',
-                              border: `2px dashed ${stellarColors.gold}`,
-                              flex: 1,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <div>
-                              <p className="ant-upload-drag-icon">
-                                <FileOutlined style={{ color: stellarColors.gold, fontSize: 48 }} />
-                              </p>
-                              <p
-                                className="ant-upload-text"
-                                style={{
                                   color: 'white',
-                                  fontFamily: "'Anton', sans-serif",
-                                  fontSize: '1.2rem',
+                                  height: '100%',
+                                  display: 'flex',
+                                  flexDirection: 'column',
                                 }}
                               >
-                                CLICK OR DRAG FILE
-                              </p>
-                              <p className="ant-upload-hint" style={{ color: '#999' }}>
-                                Select the file you want to transfer.
-                              </p>
-                            </div>
-                          </Upload.Dragger>
-                          <Button
-                            type="primary"
-                            onClick={handleUpload}
-                            disabled={fileList.length === 0 || !connection.selectedId}
-                            loading={sendLoading}
-                            icon={<SendOutlined />}
-                            size="large"
-                            style={{
-                              width: '100%',
-                              height: 60,
-                              background: stellarColors.gold,
-                              border: 'none',
-                              color: stellarColors.black,
-                              fontWeight: 600,
-                              marginTop: 24,
-                              textTransform: 'uppercase',
-                            }}
-                          >
-                            {sendLoading ? 'Sending...' : 'Send File'}
-                          </Button>
-                        </div>
-                      </Card>
-                    )}
+                                <div
+                                  style={{
+                                    flex: 1,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'space-between',
+                                    marginTop: 24,
+                                  }}
+                                >
+                                  <Upload.Dragger
+                                    className="file-transfer-dragger"
+                                    fileList={fileList}
+                                    maxCount={1}
+                                    onRemove={() => setFileList([])}
+                                    beforeUpload={(file) => {
+                                      setFileList([file]);
+                                      return false;
+                                    }}
+                                    style={{
+                                      background: '#1a1a1a',
+                                      border: `2px dashed ${stellarColors.gold}`,
+                                      flex: 1,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}
+                                  >
+                                    <div>
+                                      <p className="ant-upload-drag-icon">
+                                        <FileOutlined
+                                          style={{ color: stellarColors.gold, fontSize: 48 }}
+                                        />
+                                      </p>
+                                      <p
+                                        className="ant-upload-text"
+                                        style={{
+                                          color: 'white',
+                                          fontFamily: "'Anton', sans-serif",
+                                          fontSize: '1.2rem',
+                                        }}
+                                      >
+                                        CLICK OR DRAG FILE
+                                      </p>
+                                      <p className="ant-upload-hint" style={{ color: '#999' }}>
+                                        Select the file you want to transfer.
+                                      </p>
+                                    </div>
+                                  </Upload.Dragger>
+                                  <Button
+                                    type="primary"
+                                    onClick={handleUpload}
+                                    disabled={fileList.length === 0 || !connection.selectedId}
+                                    loading={sendLoading}
+                                    icon={<SendOutlined />}
+                                    size="large"
+                                    style={{
+                                      width: '100%',
+                                      height: 60,
+                                      background: stellarColors.gold,
+                                      border: 'none',
+                                      color: stellarColors.black,
+                                      fontWeight: 600,
+                                      marginTop: 24,
+                                      textTransform: 'uppercase',
+                                    }}
+                                  >
+                                    {sendLoading ? 'Sending...' : 'Send File'}
+                                  </Button>
+                                </div>
+                              </Card>
+                            )}
 
-                    {/* Chat Interface */}
-                    {peer.started && <ChatInterface />}
-                  </Space>
-                </Col>
-              </Row>
+                            {/* Chat Interface */}
+                          </Space>
+                        </Col>
+                      </Row>
+                    ),
+                  },
+                  {
+                    key: 'token-system',
+                    label: (
+                      <span
+                        style={{ fontFamily: "'Anton', sans-serif", textTransform: 'uppercase' }}
+                      >
+                        <WalletOutlined style={{ marginRight: 8 }} />
+                        Token System
+                      </span>
+                    ),
+                    children: <TokenSystem kit={kit} address={address} />,
+                  },
+                ]}
+                style={{ marginBottom: 24 }}
+              />
 
               {/* Chat Interface Row */}
               {peer.started && (
