@@ -102,3 +102,12 @@ html {
 .rotating-element {
   animation: rotate 20s linear infinite;
 }
+
+/* Custom styles for Upload component */
+.file-transfer-dragger .ant-upload-list-item-name {
+  color: white;
+}
+
+.file-transfer-dragger .ant-upload-list-item .ant-upload-list-item-actions .anticon {
+  color: white;
+}
