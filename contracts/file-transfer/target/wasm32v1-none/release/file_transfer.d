@@ -1,0 +1,1 @@
+/Users/beyzasarikaya/Desktop/Beyza/Stellar-P2P-File-Transfer-main/contracts/file-transfer/target/wasm32v1-none/release/file_transfer.wasm: /Users/beyzasarikaya/Desktop/Beyza/Stellar-P2P-File-Transfer-main/contracts/file-transfer/src/lib.rs

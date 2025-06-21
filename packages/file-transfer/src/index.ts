@@ -6,7 +6,7 @@ export { contract, rpc } from '@stellar/stellar-sdk';
 export const networks = {
   testnet: {
     networkPassphrase: "Test SDF Network ; September 2015",
-    contractId: "CDXKKAEMCJG5UKFXWVIAE2RBWKXMZ3EV6DQTIPOJJBCRJ62FUWZOXEF6",
+    contractId: "CB6GJN4XTMMXZBJLJBNWWY76QARNJSNIIHYF325RGPM67PPZW24T3B3L",
   }
 } as const;
 

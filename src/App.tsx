@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Card,
@@ -13,31 +13,31 @@ import {
   Typography,
   Upload,
   UploadFile,
-} from "antd";
-import { CopyOutlined, UploadOutlined } from "@ant-design/icons";
-import { useAppDispatch, useAppSelector } from "./store/hooks";
-import { startPeer, stopPeerSession } from "./store/peer/peerActions";
-import * as connectionAction from "./store/connection/connectionActions";
-import { DataType, PeerConnection } from "./helpers/peer";
-import { useAsyncState } from "./helpers/hooks";
-import * as Client from "file-transfer";
+} from 'antd';
+import { CopyOutlined, UploadOutlined } from '@ant-design/icons';
+import { useAppDispatch, useAppSelector } from './store/hooks';
+import { startPeer, stopPeerSession } from './store/peer/peerActions';
+import * as connectionAction from './store/connection/connectionActions';
+import { DataType, PeerConnection } from './helpers/peer';
+import { useAsyncState } from './helpers/hooks';
+import * as Client from 'file-transfer';
 
 import {
   StellarWalletsKit,
   WalletNetwork,
   allowAllModules,
   XBULL_ID,
-} from "@creit.tech/stellar-wallets-kit";
+} from '@creit.tech/stellar-wallets-kit';
 
 const { Title } = Typography;
-type MenuItem = Required<MenuProps>["items"][number];
+type MenuItem = Required<MenuProps>['items'][number];
 
 function getItem(
   label: React.ReactNode,
   key: React.Key,
   icon?: React.ReactNode,
   children?: MenuItem[],
-  type?: "group"
+  type?: 'group',
 ): MenuItem {
   return {
     key,
@@ -60,15 +60,15 @@ export const App: React.FC = () => {
 
   // Settings popup
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [authorizeAddress, setAuthorizeAddress] = useState("");
-  const [revokeAddress, setRevokeAddress] = useState("");
+  const [authorizeAddress, setAuthorizeAddress] = useState('');
+  const [revokeAddress, setRevokeAddress] = useState('');
 
   // Loading states for contract operations
   const [grantLoading, setGrantLoading] = useState(false);
   const [revokeLoading, setRevokeLoading] = useState(false);
 
   // Permission check states
-  const [recipientAddress, setRecipientAddress] = useState("");
+  const [recipientAddress, setRecipientAddress] = useState('');
   const [hasPermission, setHasPermission] = useState(false);
   const [checkingPermission, setCheckingPermission] = useState(false);
 
@@ -98,8 +98,8 @@ export const App: React.FC = () => {
         onClosed: () => setConnecting(false),
       });
     } catch (e) {
-      console.error("Wallet connection failed", e);
-      message.error("Wallet connection failed");
+      console.error('Wallet connection failed', e);
+      message.error('Wallet connection failed');
       setConnecting(false);
     }
   }
@@ -107,7 +107,7 @@ export const App: React.FC = () => {
   async function disconnectWallet() {
     setAddress(null);
     setHasPermission(false);
-    setRecipientAddress("");
+    setRecipientAddress('');
     dispatch(stopPeerSession());
   }
 
@@ -122,23 +122,23 @@ export const App: React.FC = () => {
     try {
       const contract = new Client.Client({
         ...Client.networks.testnet,
-        rpcUrl: "https://soroban-testnet.stellar.org:443",
+        rpcUrl: 'https://soroban-testnet.stellar.org:443',
       });
 
-      const { result } = await contract.has_permission({ 
+      const { result } = await contract.has_permission({
         grantor: recipientAddr, // The recipient is the grantor who gave permission
-        grantee: address // Current user is the grantee who received permission
+        grantee: address, // Current user is the grantee who received permission
       });
-      
+
       setHasPermission(result);
       if (result) {
-        message.success("Permission verified! You can now connect.");
+        message.success('Permission verified! You can now connect.');
       } else {
-        message.warning("No permission found for this address.");
+        message.warning('No permission found for this address.');
       }
     } catch (error) {
-      console.error("Permission check failed:", error);
-      message.error("Failed to check permission");
+      console.error('Permission check failed:', error);
+      message.error('Failed to check permission');
       setHasPermission(false);
     } finally {
       setCheckingPermission(false);
@@ -148,7 +148,7 @@ export const App: React.FC = () => {
   // Contract interaction functions
   async function grantPermission(granteeAddress: string) {
     if (!kit || !address) {
-      message.error("Wallet not connected");
+      message.error('Wallet not connected');
       return;
     }
 
@@ -156,15 +156,15 @@ export const App: React.FC = () => {
     try {
       const contract = new Client.Client({
         ...Client.networks.testnet,
-        rpcUrl: "https://soroban-testnet.stellar.org:443",
+        rpcUrl: 'https://soroban-testnet.stellar.org:443',
         allowHttp: true,
         publicKey: address,
-        ...await kit.getAddress(),
+        ...(await kit.getAddress()),
       });
 
       const tx = await contract.grant_permission({
         grantor: address,
-        grantee: granteeAddress
+        grantee: granteeAddress,
       });
 
       await tx.signAndSend({
@@ -172,10 +172,10 @@ export const App: React.FC = () => {
       });
 
       message.success(`Permission granted: ${granteeAddress}`);
-      setAuthorizeAddress("");
+      setAuthorizeAddress('');
     } catch (error) {
-      console.error("Grant permission error:", error);
-      message.error("Grant permission operation failed");
+      console.error('Grant permission error:', error);
+      message.error('Grant permission operation failed');
     } finally {
       setGrantLoading(false);
     }
@@ -183,22 +183,22 @@ export const App: React.FC = () => {
 
   async function revokePermission(granteeAddress: string) {
     if (!kit || !address) {
-      message.error("Wallet not connected");
+      message.error('Wallet not connected');
       return;
     }
     setRevokeLoading(true);
     try {
       const contract = new Client.Client({
         ...Client.networks.testnet,
-        rpcUrl: "https://soroban-testnet.stellar.org:443",
+        rpcUrl: 'https://soroban-testnet.stellar.org:443',
         allowHttp: true,
         publicKey: address,
-        ...await kit.getAddress(),
+        ...(await kit.getAddress()),
       });
 
       const tx = await contract.delete_permission({
         grantor: address,
-        grantee: granteeAddress
+        grantee: granteeAddress,
       });
 
       await tx.signAndSend({
@@ -206,10 +206,10 @@ export const App: React.FC = () => {
       });
 
       message.success(`Permission revoked: ${granteeAddress}`);
-      setRevokeAddress("");
+      setRevokeAddress('');
     } catch (error) {
-      console.error("Revoke permission error:", error);
-      message.error("Revoke permission operation failed");
+      console.error('Revoke permission error:', error);
+      message.error('Revoke permission operation failed');
     } finally {
       setRevokeLoading(false);
     }
@@ -226,17 +226,17 @@ export const App: React.FC = () => {
 
   const handleConnectOtherPeer = () => {
     connection.id != null
-      ? dispatch(connectionAction.connectPeer(connection.id || ""))
-      : message.warning("Please enter ID");
+      ? dispatch(connectionAction.connectPeer(connection.id || ''))
+      : message.warning('Please enter ID');
   };
 
   const handleUpload = async () => {
     if (fileList.length === 0) {
-      message.warning("Please select file");
+      message.warning('Please select file');
       return;
     }
     if (!connection.selectedId) {
-      message.warning("Please select a connection");
+      message.warning('Please select a connection');
       return;
     }
     try {
@@ -251,26 +251,26 @@ export const App: React.FC = () => {
         fileType: file.type,
       });
       await setSendLoading(false);
-      message.info("Send file successfully");
+      message.info('Send file successfully');
     } catch (err) {
       await setSendLoading(false);
       console.log(err);
-      message.error("Error when sending file");
+      message.error('Error when sending file');
     }
   };
 
   const cardStyle = {
     borderRadius: 12,
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     marginBottom: 24,
     padding: 24,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   };
 
   const primaryButtonStyle = {
     borderRadius: 8,
-    boxShadow: "0 2px 8px rgba(22, 119, 255, 0.4)",
-    transition: "background-color 0.3s ease",
+    boxShadow: '0 2px 8px rgba(22, 119, 255, 0.4)',
+    transition: 'background-color 0.3s ease',
   };
 
   const dangerButtonStyle = {
@@ -285,19 +285,19 @@ export const App: React.FC = () => {
     <Row
       justify="center"
       align="top"
-      style={{ minHeight: "100vh", backgroundColor: "#f7f9fc", padding: 24 }}
+      style={{ minHeight: '100vh', backgroundColor: '#f7f9fc', padding: 24 }}
     >
       <Col xs={24} sm={24} md={20} lg={16} xl={12}>
         <Card style={{ ...cardStyle, paddingBottom: 32 }}>
           <Title
             level={2}
             style={{
-              textAlign: "center",
+              textAlign: 'center',
               fontWeight: 700,
-              color: "#1677ff",
+              color: '#1677ff',
               marginBottom: 32,
               fontSize: 32,
-              userSelect: "none",
+              userSelect: 'none',
             }}
           >
             P2P File Transfer
@@ -314,7 +314,7 @@ export const App: React.FC = () => {
                 block
                 size="large"
               >
-                {connecting ? "Connecting..." : "Connect Wallet"}
+                {connecting ? 'Connecting...' : 'Connect Wallet'}
               </Button>
             </Card>
           )}
@@ -324,18 +324,17 @@ export const App: React.FC = () => {
             <>
               {/* Wallet info and buttons */}
               <Card style={cardStyle} size="small">
-                <Space style={{ justifyContent: "space-between", width: "100%" }}>
+                <Space style={{ justifyContent: 'space-between', width: '100%' }}>
                   <div
                     style={{
                       fontWeight: 600,
                       fontSize: 16,
-                      color: "#1d3557",
-                      userSelect: "all",
+                      color: '#1d3557',
+                      userSelect: 'all',
                     }}
                   >
-                    Wallet Address:{" "}
-
-                    <span style={{ fontFamily: "monospace" }}>
+                    Wallet Address:{' '}
+                    <span style={{ fontFamily: 'monospace' }}>
                       {address.slice(0, 6)}...{address.slice(-6)}
                     </span>
                     <Button
@@ -344,7 +343,7 @@ export const App: React.FC = () => {
                       style={{ marginLeft: 8 }}
                       onClick={async () => {
                         await navigator.clipboard.writeText(address);
-                        message.success("Address copied");
+                        message.success('Address copied');
                       }}
                     />
                   </div>
@@ -365,28 +364,23 @@ export const App: React.FC = () => {
                     style={{
                       fontWeight: 600,
                       fontSize: 16,
-                      color: "#1d3557",
-                      userSelect: "all",
+                      color: '#1d3557',
+                      userSelect: 'all',
                     }}
                   >
-                    ID: <span style={{ fontFamily: "monospace" }}>{peer.id}</span>
+                    ID: <span style={{ fontFamily: 'monospace' }}>{peer.id}</span>
                   </div>
                   <Button
                     icon={<CopyOutlined />}
                     onClick={async () => {
-                      await navigator.clipboard.writeText(peer.id || "");
-                      message.success("Copied: " + peer.id);
+                      await navigator.clipboard.writeText(peer.id || '');
+                      message.success('Copied: ' + peer.id);
                     }}
                     type="default"
                     shape="circle"
                     size="large"
                   />
-                  <Button
-                    danger
-                    onClick={handleStopSession}
-                    style={dangerButtonStyle}
-                    size="large"
-                  >
+                  <Button danger onClick={handleStopSession} style={dangerButtonStyle} size="large">
                     Stop
                   </Button>
                 </Space>
@@ -395,13 +389,13 @@ export const App: React.FC = () => {
               {/* Connection input and peer connection button */}
               <div hidden={!peer.started}>
                 <Card style={cardStyle}>
-                  <Space direction="vertical" style={{ width: "100%" }} size="middle">
+                  <Space direction="vertical" style={{ width: '100%' }} size="middle">
                     {/* Recipient wallet address input */}
                     <div>
                       <div style={{ marginBottom: 8, fontWeight: 600 }}>
                         Enter Recipient's Wallet Address:
                       </div>
-                      <Space.Compact style={{ width: "100%" }}>
+                      <Space.Compact style={{ width: '100%' }}>
                         <Input
                           placeholder="Enter wallet address of file recipient..."
                           value={recipientAddress}
@@ -427,10 +421,10 @@ export const App: React.FC = () => {
                     {/* Peer ID input - only show if permission is granted */}
                     {hasPermission && (
                       <div>
-                        <div style={{ marginBottom: 8, fontWeight: 600, color: "#52c41a" }}>
+                        <div style={{ marginBottom: 8, fontWeight: 600, color: '#52c41a' }}>
                           ✓ Permission verified! Enter Peer ID to connect:
                         </div>
-                        <Space.Compact style={{ width: "100%" }}>
+                        <Space.Compact style={{ width: '100%' }}>
                           <Input
                             placeholder="Enter peer ID"
                             onChange={(e) =>
@@ -460,10 +454,10 @@ export const App: React.FC = () => {
                 <Card
                   style={cardStyle}
                   title="Connections"
-                  headStyle={{ fontWeight: 600, color: "#1d3557" }}
+                  headStyle={{ fontWeight: 600, color: '#1d3557' }}
                 >
                   {connection.list.length === 0 ? (
-                    <div style={{ color: "#777", fontStyle: "italic" }}>
+                    <div style={{ color: '#777', fontStyle: 'italic' }}>
                       Waiting for connections...
                     </div>
                   ) : (
@@ -471,7 +465,7 @@ export const App: React.FC = () => {
                       selectedKeys={connection.selectedId ? [connection.selectedId] : []}
                       onSelect={(item) => dispatch(connectionAction.selectItem(item.key))}
                       items={connection.list.map((e) => getItem(e, e, null))}
-                      style={{ borderRadius: 8, userSelect: "none" }}
+                      style={{ borderRadius: 8, userSelect: 'none' }}
                       mode="vertical"
                     />
                   )}
@@ -481,7 +475,7 @@ export const App: React.FC = () => {
                 <Card
                   style={cardStyle}
                   title="Send File"
-                  headStyle={{ fontWeight: 600, color: "#1d3557" }}
+                  headStyle={{ fontWeight: 600, color: '#1d3557' }}
                 >
                   <Upload
                     fileList={fileList}
@@ -514,12 +508,12 @@ export const App: React.FC = () => {
                     style={{
                       ...primaryButtonStyle,
                       marginTop: 16,
-                      width: "100%",
+                      width: '100%',
                       fontWeight: 600,
                     }}
                     size="large"
                   >
-                    {sendLoading ? "Sending..." : "Send"}
+                    {sendLoading ? 'Sending...' : 'Send'}
                   </Button>
                 </Card>
               </div>
@@ -533,10 +527,10 @@ export const App: React.FC = () => {
             footer={null}
             title="Settings"
           >
-            <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            <Space direction="vertical" size="large" style={{ width: '100%' }}>
               <div>
                 <b>Grant Permission</b>
-                <Space.Compact style={{ width: "100%", marginTop: 8 }}>
+                <Space.Compact style={{ width: '100%', marginTop: 8 }}>
                   <Input
                     placeholder="Enter address..."
                     value={authorizeAddress}
@@ -554,7 +548,7 @@ export const App: React.FC = () => {
               </div>
               <div>
                 <b>Revoke Permission</b>
-                <Space.Compact style={{ width: "100%", marginTop: 8 }}>
+                <Space.Compact style={{ width: '100%', marginTop: 8 }}>
                   <Input
                     placeholder="Enter address..."
                     value={revokeAddress}
@@ -572,12 +566,10 @@ export const App: React.FC = () => {
               </div>
             </Space>
           </Modal>
-
         </Card>
       </Col>
     </Row>
   );
-
 };
 
 export default App;

@@ -1,0 +1,7 @@
+# Contract configuration for file-transfer
+name = "file-transfer"
+wasm_hash = "b1f84c3c2f0c30995df18800e08e8faeac4bbb9b982b9a620d7a7b77b404e63d"
+contract_id = "CB6GJN4XTMMXZBJLJBNWWY76QARNJSNIIHYF325RGPM67PPZW24T3B3L"
+network = "testnet"
+deployed_at = "2025-06-21T11:42:00Z"
+source_account = "test-account"
