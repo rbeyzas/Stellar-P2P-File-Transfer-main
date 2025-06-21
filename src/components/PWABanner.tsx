@@ -2,14 +2,25 @@ import React from 'react';
 import { Alert, Button, Space } from 'antd';
 import { DownloadOutlined, CloseOutlined } from '@ant-design/icons';
 import { usePWA } from '../hooks/usePWA';
-// TODO: chrome da bu banner görünmüyor.
+
 const PWABanner: React.FC = () => {
   const { canInstall, isInstalled, installApp } = usePWA();
 
+  // Debug logging
+  console.log('PWABanner Debug - canInstall:', canInstall, 'isInstalled:', isInstalled);
+
   // Don't show banner if app is already installed or can't be installed
   if (isInstalled || !canInstall) {
+    console.log(
+      'PWABanner Debug - Not showing banner. isInstalled:',
+      isInstalled,
+      'canInstall:',
+      canInstall,
+    );
     return null;
   }
+
+  console.log('PWABanner Debug - Showing banner');
 
   return (
     <Alert

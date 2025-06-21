@@ -21,6 +21,7 @@ export const usePWA = () => {
       const isInstalled =
         window.matchMedia('(display-mode: standalone)').matches ||
         (window.navigator as any).standalone === true;
+      console.log('PWA Debug - isInstalled:', isInstalled);
       setPwaState((prev) => ({ ...prev, isInstalled }));
     };
 
@@ -30,6 +31,7 @@ export const usePWA = () => {
 
     // Handle beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
+      console.log('PWA Debug - beforeinstallprompt event fired');
       e.preventDefault();
       setPwaState((prev) => ({
         ...prev,
@@ -40,6 +42,7 @@ export const usePWA = () => {
 
     // Handle appinstalled event
     const handleAppInstalled = () => {
+      console.log('PWA Debug - appinstalled event fired');
       setPwaState((prev) => ({
         ...prev,
         isInstalled: true,
@@ -53,16 +56,34 @@ export const usePWA = () => {
       if ('serviceWorker' in navigator) {
         try {
           const registration = await navigator.serviceWorker.register('/sw.js');
-          console.log('SW registered: ', registration);
+          console.log('PWA Debug - SW registered: ', registration);
         } catch (registrationError) {
-          console.log('SW registration failed: ', registrationError);
+          console.log('PWA Debug - SW registration failed: ', registrationError);
         }
+      } else {
+        console.log('PWA Debug - Service Worker not supported');
       }
+    };
+
+    // Check PWA criteria
+    const checkPWACriteria = () => {
+      const hasManifest = !!document.querySelector('link[rel="manifest"]');
+      const hasServiceWorker = 'serviceWorker' in navigator;
+      const isHTTPS =
+        window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+
+      console.log('PWA Debug - Criteria check:', {
+        hasManifest,
+        hasServiceWorker,
+        isHTTPS,
+        userAgent: navigator.userAgent,
+      });
     };
 
     // Initialize
     checkIfInstalled();
     registerServiceWorker();
+    checkPWACriteria();
 
     // Add event listeners
     window.addEventListener('online', handleOnline);
@@ -80,13 +101,14 @@ export const usePWA = () => {
   }, []);
 
   const installApp = async () => {
+    console.log('PWA Debug - installApp called, deferredPrompt:', !!pwaState.deferredPrompt);
     if (pwaState.deferredPrompt) {
       pwaState.deferredPrompt.prompt();
       const { outcome } = await pwaState.deferredPrompt.userChoice;
       if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
+        console.log('PWA Debug - User accepted the install prompt');
       } else {
-        console.log('User dismissed the install prompt');
+        console.log('PWA Debug - User dismissed the install prompt');
       }
       setPwaState((prev) => ({
         ...prev,
@@ -108,6 +130,9 @@ export const usePWA = () => {
       new Notification(title, options);
     }
   };
+
+  // Debug logging
+  console.log('PWA Debug - Current state:', pwaState);
 
   return {
     ...pwaState,

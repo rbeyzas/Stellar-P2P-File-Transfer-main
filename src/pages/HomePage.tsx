@@ -449,7 +449,7 @@ export const HomePage: React.FC = () => {
       }}
     >
       {/* PWA Install Banner */}
-      <PWABanner />
+      {/* <PWABanner /> */}
 
       <Row justify="center" align="top">
         <Col xs={24} sm={24} md={22} lg={20} xl={18}>
