@@ -1,13 +1,11 @@
 import React from 'react';
-import { Button, Typography, Space, Card } from 'antd';
+import { Button, Typography, Space, Card, Row, Col } from 'antd';
 import {
   SendOutlined,
-  DownloadOutlined,
   RocketOutlined,
   SafetyOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 const { Title, Paragraph } = Typography;
@@ -15,240 +13,178 @@ const { Title, Paragraph } = Typography;
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        staggerChildren: 0.3,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: 'easeOut',
-      },
-    },
-  };
-
-  const buttonVariants = {
-    hover: {
-      scale: 1.05,
-      boxShadow: '0 8px 25px rgba(22, 119, 255, 0.3)',
-      transition: {
-        duration: 0.3,
-        ease: 'easeInOut',
-      },
-    },
-    tap: {
-      scale: 0.95,
-    },
-  };
-
-  const featureVariants = {
-    hover: {
-      y: -10,
-      transition: {
-        duration: 0.3,
-        ease: 'easeInOut',
-      },
-    },
+  // Stellar Brand Colors
+  const stellarColors = {
+    gold: '#FDDA24',
+    black: '#0F0F0F',
+    white: '#F6F7F8',
   };
 
   return (
     <div
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: '20px',
-        overflow: 'hidden',
+        background: stellarColors.white,
+        color: stellarColors.black,
+        padding: '60px 20px',
+        fontFamily: "'Inter', sans-serif",
       }}
     >
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+      <div
         style={{
           maxWidth: '1200px',
           margin: '0 auto',
           textAlign: 'center',
-          color: 'white',
         }}
       >
         {/* Header */}
-        <motion.div variants={itemVariants}>
+        <div>
           <Title
             level={1}
             style={{
-              color: 'white',
-              fontSize: '3.5rem',
+              fontFamily: "'Anton', sans-serif",
+              color: stellarColors.black,
+              fontSize: '4rem',
               fontWeight: 700,
+              textTransform: 'uppercase',
               marginBottom: '20px',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
             }}
           >
-            <RocketOutlined style={{ marginRight: '20px' }} />
-            Stellar P2P File Transfer
+            STELLAR P2P FILE TRANSFER
           </Title>
           <Paragraph
             style={{
+              fontFamily: "'Lora', serif",
               fontSize: '1.3rem',
-              color: 'rgba(255,255,255,0.9)',
+              color: '#555',
               marginBottom: '50px',
-              maxWidth: '600px',
+              maxWidth: '700px',
               marginLeft: 'auto',
               marginRight: 'auto',
             }}
           >
-            Secure, decentralized file sharing powered by Stellar blockchain and WebRTC technology
+            Secure, decentralized file sharing powered by the Stellar blockchain and WebRTC
+            technology. Real-world utility, unlocked.
           </Paragraph>
-        </motion.div>
+        </div>
 
-        {/* Main Action Buttons */}
-        <motion.div variants={itemVariants} style={{ marginBottom: '80px' }}>
-          <Space size="large" wrap style={{ justifyContent: 'center' }}>
-            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-              <Button
-                type="primary"
-                size="large"
-                icon={<SendOutlined />}
-                onClick={() => navigate('/app')}
-                style={{
-                  height: '60px',
-                  padding: '0 40px',
-                  fontSize: '18px',
-                  borderRadius: '30px',
-                  background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
-                  border: 'none',
-                  boxShadow: '0 4px 15px rgba(255, 107, 107, 0.4)',
-                }}
-              >
-                Send File
-              </Button>
-            </motion.div>
-
-            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-              <Button
-                size="large"
-                icon={<DownloadOutlined />}
-                onClick={() => navigate('/app')}
-                style={{
-                  height: '60px',
-                  padding: '0 40px',
-                  fontSize: '18px',
-                  borderRadius: '30px',
-                  background: 'rgba(255,255,255,0.2)',
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  color: 'white',
-                  backdropFilter: 'blur(10px)',
-                }}
-              >
-                Receive File
-              </Button>
-            </motion.div>
-          </Space>
-        </motion.div>
-
-        {/* Features */}
-        <motion.div variants={itemVariants}>
-          <div
+        {/* Main Action Button */}
+        <div style={{ marginBottom: '80px' }}>
+          <Button
+            type="primary"
+            size="large"
+            icon={<SendOutlined />}
+            onClick={() => navigate('/app')}
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '30px',
-              marginTop: '60px',
+              height: '60px',
+              padding: '0 50px',
+              fontSize: '18px',
+              background: stellarColors.black,
+              border: 'none',
+              color: stellarColors.gold,
+              fontWeight: 600,
+              textTransform: 'uppercase',
             }}
           >
-            <motion.div variants={featureVariants} whileHover="hover">
+            Get Started
+          </Button>
+        </div>
+
+        {/* Features */}
+        <div>
+          <Row gutter={[40, 40]} justify="center">
+            <Col xs={24} sm={12} md={8}>
               <Card
+                bordered={false}
                 style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '20px',
-                  backdropFilter: 'blur(10px)',
+                  background: 'white',
                   height: '100%',
+                  padding: '20px',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
                 }}
               >
                 <SafetyOutlined
-                  style={{ fontSize: '3rem', color: '#52c41a', marginBottom: '20px' }}
+                  style={{ fontSize: '3rem', color: stellarColors.black, marginBottom: '20px' }}
                 />
-                <Title level={3} style={{ color: 'white', marginBottom: '15px' }}>
-                  Blockchain Security
+                <Title
+                  level={3}
+                  style={{ fontFamily: "'Anton', sans-serif", color: stellarColors.black }}
+                >
+                  BLOCKCHAIN SECURITY
                 </Title>
-                <Paragraph style={{ color: 'rgba(255,255,255,0.8)' }}>
+                <Paragraph style={{ fontFamily: "'Lora', serif", color: '#555' }}>
                   Permission-based access control using Stellar smart contracts ensures only
-                  authorized users can transfer files.
+                  authorized users can connect.
                 </Paragraph>
               </Card>
-            </motion.div>
+            </Col>
 
-            <motion.div variants={featureVariants} whileHover="hover">
+            <Col xs={24} sm={12} md={8}>
               <Card
+                bordered={false}
                 style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '20px',
-                  backdropFilter: 'blur(10px)',
+                  background: stellarColors.gold,
                   height: '100%',
+                  padding: '20px',
                 }}
               >
                 <ThunderboltOutlined
-                  style={{ fontSize: '3rem', color: '#faad14', marginBottom: '20px' }}
+                  style={{ fontSize: '3rem', color: stellarColors.black, marginBottom: '20px' }}
                 />
-                <Title level={3} style={{ color: 'white', marginBottom: '15px' }}>
-                  Lightning Fast
+                <Title
+                  level={3}
+                  style={{ fontFamily: "'Anton', sans-serif", color: stellarColors.black }}
+                >
+                  LIGHTNING FAST
                 </Title>
-                <Paragraph style={{ color: 'rgba(255,255,255,0.8)' }}>
+                <Paragraph style={{ fontFamily: "'Lora', serif", color: stellarColors.black }}>
                   Direct peer-to-peer connections via WebRTC enable instant file transfers without
                   server intermediaries.
                 </Paragraph>
               </Card>
-            </motion.div>
+            </Col>
 
-            <motion.div variants={featureVariants} whileHover="hover">
+            <Col xs={24} sm={12} md={8}>
               <Card
+                bordered={false}
                 style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '20px',
-                  backdropFilter: 'blur(10px)',
+                  background: 'white',
                   height: '100%',
+                  padding: '20px',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
                 }}
               >
                 <RocketOutlined
-                  style={{ fontSize: '3rem', color: '#1890ff', marginBottom: '20px' }}
+                  style={{ fontSize: '3rem', color: stellarColors.black, marginBottom: '20px' }}
                 />
-                <Title level={3} style={{ color: 'white', marginBottom: '15px' }}>
-                  Decentralized
+                <Title
+                  level={3}
+                  style={{ fontFamily: "'Anton', sans-serif", color: stellarColors.black }}
+                >
+                  DECENTRALIZED
                 </Title>
-                <Paragraph style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  Built on Stellar blockchain for transparent, immutable, and censorship-resistant
+                <Paragraph style={{ fontFamily: "'Lora', serif", color: '#555' }}>
+                  Built on the Stellar network for transparent, immutable, and censorship-resistant
                   file sharing.
                 </Paragraph>
               </Card>
-            </motion.div>
-          </div>
-        </motion.div>
+            </Col>
+          </Row>
+        </div>
 
         {/* Footer */}
-        <motion.div variants={itemVariants} style={{ marginTop: '80px' }}>
+        <div style={{ marginTop: '80px' }}>
           <Paragraph
             style={{
-              color: 'rgba(255,255,255,0.7)',
+              color: '#888',
               fontSize: '1rem',
+              fontFamily: "'Inter', sans-serif",
             }}
           >
-            Powered by Stellar Blockchain & WebRTC Technology
+            Powered by Stellar & WebRTC
           </Paragraph>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 };

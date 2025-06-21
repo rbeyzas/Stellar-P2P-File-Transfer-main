@@ -14,7 +14,7 @@ import {
   Upload,
   UploadFile,
 } from 'antd';
-import { CopyOutlined, UploadOutlined } from '@ant-design/icons';
+import { FileOutlined, SendOutlined, CheckCircleOutlined, LinkOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { startPeer, stopPeerSession } from '../store/peer/peerActions';
 import * as connectionAction from '../store/connection/connectionActions';
@@ -29,7 +29,7 @@ import {
   XBULL_ID,
 } from '@creit.tech/stellar-wallets-kit';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 type MenuItem = Required<MenuProps>['items'][number];
 
 function getItem(
@@ -72,7 +72,13 @@ export const HomePage: React.FC = () => {
   const [hasPermission, setHasPermission] = useState(false);
   const [checkingPermission, setCheckingPermission] = useState(false);
 
-  // Initialize StellarWalletsKit once
+  // Stellar Brand Colors
+  const stellarColors = {
+    gold: '#FDDA24',
+    black: '#0F0F0F',
+    white: '#F6F7F8',
+  };
+
   useEffect(() => {
     const newKit = new StellarWalletsKit({
       network: WalletNetwork.TESTNET,
@@ -111,7 +117,6 @@ export const HomePage: React.FC = () => {
     dispatch(stopPeerSession());
   }
 
-  // Check permission function
   async function checkPermission(recipientAddr: string) {
     if (!address || !recipientAddr.trim()) {
       setHasPermission(false);
@@ -126,8 +131,8 @@ export const HomePage: React.FC = () => {
       });
 
       const { result } = await contract.has_permission({
-        grantor: recipientAddr, // The recipient is the grantor who gave permission
-        grantee: address, // Current user is the grantee who received permission
+        grantor: recipientAddr,
+        grantee: address,
       });
 
       setHasPermission(result);
@@ -145,7 +150,6 @@ export const HomePage: React.FC = () => {
     }
   }
 
-  // Contract interaction functions
   async function grantPermission(granteeAddress: string) {
     if (!kit || !address) {
       message.error('Wallet not connected');
@@ -218,12 +222,6 @@ export const HomePage: React.FC = () => {
   const [fileList, setFileList] = useAsyncState([] as UploadFile[]);
   const [sendLoading, setSendLoading] = useAsyncState(false);
 
-  const handleStopSession = async () => {
-    await PeerConnection.closePeerSession();
-    dispatch(stopPeerSession());
-    setAddress(null);
-  };
-
   const handleConnectOtherPeer = () => {
     connection.id != null
       ? dispatch(connectionAction.connectPeer(connection.id || ''))
@@ -251,7 +249,7 @@ export const HomePage: React.FC = () => {
         fileType: file.type,
       });
       await setSendLoading(false);
-      message.info('Send file successfully');
+      message.success('File sent successfully!');
     } catch (err) {
       await setSendLoading(false);
       console.log(err);
@@ -259,316 +257,450 @@ export const HomePage: React.FC = () => {
     }
   };
 
-  const cardStyle = {
-    borderRadius: 12,
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-    marginBottom: 24,
-    padding: 24,
-    backgroundColor: '#fff',
-  };
-
-  const primaryButtonStyle = {
-    borderRadius: 8,
-    boxShadow: '0 2px 8px rgba(22, 119, 255, 0.4)',
-    transition: 'background-color 0.3s ease',
-  };
-
-  const dangerButtonStyle = {
-    borderRadius: 8,
-  };
-
-  const inputStyle = {
-    borderRadius: 8,
-  };
-
   return (
-    <Row
-      justify="center"
-      align="top"
-      style={{ minHeight: '100vh', backgroundColor: '#f7f9fc', padding: 24 }}
+    <div
+      style={{
+        minHeight: '100vh',
+        background: stellarColors.white,
+        color: stellarColors.black,
+        padding: '40px 20px',
+        fontFamily: "'Inter', sans-serif",
+      }}
     >
-      <Col xs={24} sm={24} md={20} lg={16} xl={12}>
-        <Card style={{ ...cardStyle, paddingBottom: 32 }}>
-          <Title
-            level={2}
-            style={{
-              textAlign: 'center',
-              fontWeight: 700,
-              color: '#1677ff',
-              marginBottom: 32,
-              fontSize: 32,
-              userSelect: 'none',
-            }}
-          >
-            P2P File Transfer
-          </Title>
+      <Row justify="center" align="top">
+        <Col xs={24} sm={24} md={22} lg={20} xl={18}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', marginBottom: 60 }}>
+            <Title
+              level={1}
+              style={{
+                fontFamily: "'Anton', sans-serif",
+                color: stellarColors.black,
+                fontSize: '3rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: 15,
+              }}
+            >
+              STELLAR TRANSFER HUB
+            </Title>
+            <Text
+              style={{
+                fontFamily: "'Lora', serif",
+                fontSize: '1.2rem',
+                color: '#555',
+                maxWidth: '600px',
+                margin: '0 auto',
+              }}
+            >
+              Unlock real-world utility with secure, decentralized file sharing powered by the
+              Stellar network.
+            </Text>
+          </div>
 
-          {/* Show connect wallet button if wallet is not connected */}
+          {/* Wallet Connection Section */}
           {!address && (
-            <Card style={cardStyle}>
+            <div
+              style={{
+                background: stellarColors.gold,
+                padding: '60px 40px',
+                textAlign: 'center',
+              }}
+            >
+              <Title
+                level={2}
+                style={{
+                  fontFamily: "'Anton', sans-serif",
+                  color: 'black',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                }}
+              >
+                DIGITAL WALLETS
+              </Title>
+              <Text
+                style={{
+                  fontFamily: "'Lora', serif",
+                  color: 'rgba(0,0,0,0.7)',
+                  fontSize: 16,
+                  display: 'block',
+                  marginBottom: 40,
+                  maxWidth: '400px',
+                  margin: '0 auto 40px auto',
+                }}
+              >
+                Embark on your Stellar journey. Connect your wallet to begin.
+              </Text>
               <Button
                 onClick={connectWallet}
                 disabled={connecting}
                 type="primary"
-                style={primaryButtonStyle}
-                block
                 size="large"
+                style={{
+                  height: 60,
+                  padding: '0 50px',
+                  fontSize: 18,
+                  background: stellarColors.black,
+                  border: 'none',
+                  color: stellarColors.gold,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                }}
               >
                 {connecting ? 'Connecting...' : 'Connect Wallet'}
               </Button>
-            </Card>
+            </div>
           )}
 
-          {/* Show operations screen if wallet is connected */}
+          {/* Main Application */}
           {address && (
             <>
-              {/* Wallet info and buttons */}
-              <Card style={cardStyle} size="small">
-                <Space style={{ justifyContent: 'space-between', width: '100%' }}>
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      fontSize: 16,
-                      color: '#1d3557',
-                      userSelect: 'all',
-                    }}
-                  >
-                    Wallet Address:{' '}
-                    <span style={{ fontFamily: 'monospace' }}>
-                      {address.slice(0, 6)}...{address.slice(-6)}
-                    </span>
-                    <Button
-                      icon={<CopyOutlined />}
-                      size="small"
-                      style={{ marginLeft: 8 }}
-                      onClick={async () => {
-                        await navigator.clipboard.writeText(address);
-                        message.success('Address copied');
-                      }}
-                    />
-                  </div>
-
-                  <Space>
-                    <Button danger onClick={disconnectWallet} style={dangerButtonStyle}>
-                      Disconnect
-                    </Button>
-                    <Button onClick={() => setSettingsOpen(true)}>Settings</Button>
-                  </Space>
-                </Space>
+              {/* Wallet Info Bar */}
+              <Card
+                style={{
+                  borderRadius: 0,
+                  marginBottom: 30,
+                  background: 'white',
+                  border: `1px solid #eee`,
+                }}
+              >
+                <Row align="middle" justify="space-between">
+                  <Col>
+                    <Space>
+                      <CheckCircleOutlined style={{ color: '#52c41a', fontSize: 20 }} />
+                      <Text strong>Wallet Connected:</Text>
+                      <Text style={{ fontFamily: 'monospace' }}>{address}</Text>
+                    </Space>
+                  </Col>
+                  <Col>
+                    <Space>
+                      <Button onClick={() => setSettingsOpen(true)}>Settings</Button>
+                      <Button danger onClick={disconnectWallet}>
+                        Disconnect
+                      </Button>
+                    </Space>
+                  </Col>
+                </Row>
               </Card>
 
-              {/* Peer info */}
-              <Card style={cardStyle} hidden={!peer.started}>
-                <Space size="large" wrap>
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      fontSize: 16,
-                      color: '#1d3557',
-                      userSelect: 'all',
-                    }}
-                  >
-                    ID: <span style={{ fontFamily: 'monospace' }}>{peer.id}</span>
-                  </div>
-                  <Button
-                    icon={<CopyOutlined />}
-                    onClick={async () => {
-                      await navigator.clipboard.writeText(peer.id || '');
-                      message.success('Copied: ' + peer.id);
-                    }}
-                    type="default"
-                    shape="circle"
-                    size="large"
-                  />
-                  <Button danger onClick={handleStopSession} style={dangerButtonStyle} size="large">
-                    Stop
-                  </Button>
-                </Space>
-              </Card>
-
-              {/* Connection input and peer connection button */}
-              <div hidden={!peer.started}>
-                <Card style={cardStyle}>
-                  <Space direction="vertical" style={{ width: '100%' }} size="middle">
-                    {/* Recipient wallet address input */}
-                    <div>
-                      <div style={{ marginBottom: 8, fontWeight: 600 }}>
-                        Enter Recipient's Wallet Address:
-                      </div>
-                      <Space.Compact style={{ width: '100%' }}>
-                        <Input
-                          placeholder="Enter wallet address of file recipient..."
-                          value={recipientAddress}
-                          onChange={(e) => {
-                            setRecipientAddress(e.target.value);
-                            setHasPermission(false); // Reset permission when address changes
-                          }}
-                          style={inputStyle}
-                          size="large"
-                        />
-                        <Button
-                          onClick={() => checkPermission(recipientAddress)}
-                          loading={checkingPermission}
-                          type="default"
-                          size="large"
-                          disabled={!recipientAddress.trim()}
-                        >
-                          Check Permission
-                        </Button>
-                      </Space.Compact>
-                    </div>
-
-                    {/* Peer ID input - only show if permission is granted */}
-                    {hasPermission && (
-                      <div>
-                        <div style={{ marginBottom: 8, fontWeight: 600, color: '#52c41a' }}>
-                          ✓ Permission verified! Enter Peer ID to connect:
-                        </div>
-                        <Space.Compact style={{ width: '100%' }}>
-                          <Input
-                            placeholder="Enter peer ID"
-                            onChange={(e) =>
-                              dispatch(connectionAction.changeConnectionInput(e.target.value))
-                            }
-                            required
-                            value={connection.id}
-                            style={inputStyle}
-                            size="large"
-                          />
-                          <Button
-                            onClick={handleConnectOtherPeer}
-                            loading={connection.loading}
-                            type="primary"
-                            style={primaryButtonStyle}
-                            size="large"
+              <Row gutter={[24, 24]}>
+                <Col xs={24} lg={12}>
+                  <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                    {/* Connection Setup */}
+                    {peer.started && (
+                      <Card
+                        title={
+                          <Title
+                            level={4}
+                            style={{
+                              fontFamily: "'Anton', sans-serif",
+                              textTransform: 'uppercase',
+                              margin: 0,
+                            }}
                           >
-                            Connect
-                          </Button>
-                        </Space.Compact>
-                      </div>
+                            Connection Setup
+                          </Title>
+                        }
+                        bordered={false}
+                        style={{ background: 'white', height: '100%' }}
+                      >
+                        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                          <div>
+                            <Text
+                              strong
+                              style={{
+                                fontFamily: "'Inter', sans-serif",
+                                textTransform: 'uppercase',
+                              }}
+                            >
+                              Recipient's Wallet Address
+                            </Text>
+                            <Space.Compact style={{ width: '100%', marginTop: 8 }}>
+                              <Input
+                                placeholder="Enter wallet address..."
+                                value={recipientAddress}
+                                onChange={(e) => {
+                                  setRecipientAddress(e.target.value);
+                                  setHasPermission(false);
+                                }}
+                                size="large"
+                                style={{ borderRadius: 0 }}
+                              />
+                              <Button
+                                type="primary"
+                                loading={checkingPermission}
+                                onClick={() => checkPermission(recipientAddress)}
+                                disabled={!recipientAddress.trim()}
+                                style={{
+                                  background: stellarColors.black,
+                                  color: stellarColors.gold,
+                                  borderRadius: 0,
+                                }}
+                                size="large"
+                              >
+                                Check
+                              </Button>
+                            </Space.Compact>
+                          </div>
+                          {hasPermission && (
+                            <div>
+                              <Text
+                                strong
+                                style={{
+                                  fontFamily: "'Inter', sans-serif",
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                Peer ID
+                              </Text>
+                              <Space.Compact style={{ width: '100%', marginTop: 8 }}>
+                                <Input
+                                  placeholder="Enter peer ID..."
+                                  value={connection.id}
+                                  onChange={(e) =>
+                                    dispatch(connectionAction.changeConnectionInput(e.target.value))
+                                  }
+                                  size="large"
+                                  style={{ borderRadius: 0 }}
+                                />
+                                <Button
+                                  type="primary"
+                                  loading={connection.loading}
+                                  onClick={handleConnectOtherPeer}
+                                  style={{
+                                    background: stellarColors.black,
+                                    color: stellarColors.gold,
+                                    borderRadius: 0,
+                                  }}
+                                  size="large"
+                                >
+                                  Connect
+                                </Button>
+                              </Space.Compact>
+                            </div>
+                          )}
+                        </Space>
+                      </Card>
+                    )}
+
+                    {/* Active Connections */}
+                    {peer.started && (
+                      <Card
+                        title={
+                          <Title
+                            level={4}
+                            style={{
+                              fontFamily: "'Anton', sans-serif",
+                              textTransform: 'uppercase',
+                              margin: 0,
+                            }}
+                          >
+                            Active Connections
+                          </Title>
+                        }
+                        bordered={false}
+                        style={{ background: 'white', height: '100%' }}
+                      >
+                        {connection.list.length > 0 ? (
+                          <Menu
+                            selectedKeys={connection.selectedId ? [connection.selectedId] : []}
+                            onSelect={(info: { key: string }) =>
+                              dispatch(connectionAction.selectItem(info.key))
+                            }
+                            items={connection.list.map((e) => getItem(e, e, <LinkOutlined />))}
+                            mode="vertical"
+                          />
+                        ) : (
+                          <Text type="secondary">Waiting for connections...</Text>
+                        )}
+                      </Card>
                     )}
                   </Space>
-                </Card>
+                </Col>
 
-                {/* Active connections */}
-                <Card
-                  style={cardStyle}
-                  title="Connections"
-                  headStyle={{ fontWeight: 600, color: '#1d3557' }}
-                >
-                  {connection.list.length === 0 ? (
-                    <div style={{ color: '#777', fontStyle: 'italic' }}>
-                      Waiting for connections...
-                    </div>
-                  ) : (
-                    <Menu
-                      selectedKeys={connection.selectedId ? [connection.selectedId] : []}
-                      onSelect={(item) => dispatch(connectionAction.selectItem(item.key))}
-                      items={connection.list.map((e) => getItem(e, e, null))}
-                      style={{ borderRadius: 8, userSelect: 'none' }}
-                      mode="vertical"
-                    />
-                  )}
-                </Card>
-
-                {/* File sending area */}
-                <Card
-                  style={cardStyle}
-                  title="Send File"
-                  headStyle={{ fontWeight: 600, color: '#1d3557' }}
-                >
-                  <Upload
-                    fileList={fileList}
-                    maxCount={1}
-                    onRemove={() => setFileList([])}
-                    beforeUpload={(file) => {
-                      setFileList([file]);
-                      return false;
-                    }}
-                    showUploadList={{
-                      showRemoveIcon: true,
-                      showDownloadIcon: false,
-                    }}
-                  >
-                    <Button
-                      icon={<UploadOutlined />}
-                      type="default"
-                      style={{ borderRadius: 8 }}
-                      size="middle"
+                <Col xs={24} lg={12}>
+                  {/* File Transfer */}
+                  {peer.started && (
+                    <Card
+                      bordered={false}
+                      style={{
+                        background: stellarColors.black,
+                        color: 'white',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
                     >
-                      Select File
-                    </Button>
-                  </Upload>
+                      <Title
+                        level={4}
+                        style={{
+                          fontFamily: "'Anton', sans-serif",
+                          color: 'white',
+                          textTransform: 'uppercase',
+                          margin: 0,
+                        }}
+                      >
+                        Send File
+                      </Title>
+                      <div
+                        style={{
+                          flex: 1,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          marginTop: 24,
+                        }}
+                      >
+                        <Upload.Dragger
+                          fileList={fileList}
+                          maxCount={1}
+                          onRemove={() => setFileList([])}
+                          beforeUpload={(file) => {
+                            setFileList([file]);
+                            return false;
+                          }}
+                          style={{
+                            background: '#1a1a1a',
+                            border: `2px dashed ${stellarColors.gold}`,
+                            flex: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <div>
+                            <p className="ant-upload-drag-icon">
+                              <FileOutlined style={{ color: stellarColors.gold, fontSize: 48 }} />
+                            </p>
+                            <p
+                              className="ant-upload-text"
+                              style={{
+                                color: 'white',
+                                fontFamily: "'Anton', sans-serif",
+                                fontSize: '1.2rem',
+                              }}
+                            >
+                              CLICK OR DRAG FILE
+                            </p>
+                            <p className="ant-upload-hint" style={{ color: '#999' }}>
+                              Select the file you want to transfer.
+                            </p>
+                          </div>
+                        </Upload.Dragger>
+                        <Button
+                          type="primary"
+                          onClick={handleUpload}
+                          disabled={fileList.length === 0 || !connection.selectedId}
+                          loading={sendLoading}
+                          icon={<SendOutlined />}
+                          size="large"
+                          style={{
+                            width: '100%',
+                            height: 60,
+                            background: stellarColors.gold,
+                            border: 'none',
+                            color: stellarColors.black,
+                            fontWeight: 600,
+                            marginTop: 24,
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          {sendLoading ? 'Sending...' : 'Send File'}
+                        </Button>
+                      </div>
+                    </Card>
+                  )}
+                </Col>
+              </Row>
 
-                  <Button
-                    type="primary"
-                    onClick={handleUpload}
-                    disabled={fileList.length === 0}
-                    loading={sendLoading}
+              {/* Settings Modal */}
+              <Modal
+                open={settingsOpen}
+                onCancel={() => setSettingsOpen(false)}
+                footer={null}
+                title={
+                  <Title
+                    level={3}
                     style={{
-                      ...primaryButtonStyle,
-                      marginTop: 16,
-                      width: '100%',
-                      fontWeight: 600,
+                      fontFamily: "'Anton', sans-serif",
+                      textTransform: 'uppercase',
+                      margin: 0,
                     }}
-                    size="large"
                   >
-                    {sendLoading ? 'Sending...' : 'Send'}
-                  </Button>
-                </Card>
-              </div>
+                    Permission Settings
+                  </Title>
+                }
+              >
+                <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                  <Card
+                    title={
+                      <Title
+                        level={5}
+                        style={{
+                          fontFamily: "'Anton', sans-serif",
+                          textTransform: 'uppercase',
+                          margin: 0,
+                        }}
+                      >
+                        Grant Permission
+                      </Title>
+                    }
+                  >
+                    <Space.Compact style={{ width: '100%' }}>
+                      <Input
+                        placeholder="Enter address..."
+                        value={authorizeAddress}
+                        onChange={(e) => setAuthorizeAddress(e.target.value)}
+                      />
+                      <Button
+                        type="primary"
+                        loading={grantLoading}
+                        onClick={() => grantPermission(authorizeAddress)}
+                        disabled={!authorizeAddress.trim()}
+                        style={{ background: stellarColors.black, color: stellarColors.gold }}
+                      >
+                        Grant
+                      </Button>
+                    </Space.Compact>
+                  </Card>
+                  <Card
+                    title={
+                      <Title
+                        level={5}
+                        style={{
+                          fontFamily: "'Anton', sans-serif",
+                          textTransform: 'uppercase',
+                          margin: 0,
+                        }}
+                      >
+                        Revoke Permission
+                      </Title>
+                    }
+                  >
+                    <Space.Compact style={{ width: '100%' }}>
+                      <Input
+                        placeholder="Enter address..."
+                        value={revokeAddress}
+                        onChange={(e) => setRevokeAddress(e.target.value)}
+                      />
+                      <Button
+                        danger
+                        loading={revokeLoading}
+                        onClick={() => revokePermission(revokeAddress)}
+                        disabled={!revokeAddress.trim()}
+                      >
+                        Revoke
+                      </Button>
+                    </Space.Compact>
+                  </Card>
+                </Space>
+              </Modal>
             </>
           )}
-
-          {/* Settings Modal */}
-          <Modal
-            open={settingsOpen}
-            onCancel={() => setSettingsOpen(false)}
-            footer={null}
-            title="Settings"
-          >
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-              <div>
-                <b>Grant Permission</b>
-                <Space.Compact style={{ width: '100%', marginTop: 8 }}>
-                  <Input
-                    placeholder="Enter address..."
-                    value={authorizeAddress}
-                    onChange={(e) => setAuthorizeAddress(e.target.value)}
-                  />
-                  <Button
-                    type="primary"
-                    loading={grantLoading}
-                    onClick={() => grantPermission(authorizeAddress)}
-                    disabled={!authorizeAddress.trim()}
-                  >
-                    Grant
-                  </Button>
-                </Space.Compact>
-              </div>
-              <div>
-                <b>Revoke Permission</b>
-                <Space.Compact style={{ width: '100%', marginTop: 8 }}>
-                  <Input
-                    placeholder="Enter address..."
-                    value={revokeAddress}
-                    onChange={(e) => setRevokeAddress(e.target.value)}
-                  />
-                  <Button
-                    danger
-                    loading={revokeLoading}
-                    onClick={() => revokePermission(revokeAddress)}
-                    disabled={!revokeAddress.trim()}
-                  >
-                    Revoke
-                  </Button>
-                </Space.Compact>
-              </div>
-            </Space>
-          </Modal>
-        </Card>
-      </Col>
-    </Row>
+        </Col>
+      </Row>
+    </div>
   );
 };
 

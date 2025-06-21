@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=Lora:ital,wght@0,400;0;700;1,400&display=swap');
+
 .App {
   text-align: center;
 }
@@ -66,4 +68,37 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Animations for HomePage */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Apply animations to elements */
+.floating-element {
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-element-reverse {
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+.rotating-element {
+  animation: rotate 20s linear infinite;
 }
