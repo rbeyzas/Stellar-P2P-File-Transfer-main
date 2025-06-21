@@ -2,6 +2,7 @@ import { ConnectionActionType, Message } from './connectionTypes';
 import { Dispatch } from 'redux';
 import { DataType, PeerConnection } from '../../helpers/peer';
 import { message } from 'antd';
+import { createTransferRecord, completeTransfer, failTransfer } from '../transfer/transferActions';
 import download from 'js-file-download';
 
 export const changeConnectionInput = (id: string) => ({
@@ -52,7 +53,26 @@ export const connectPeer: (id: string) => (dispatch: Dispatch) => Promise<void> 
       PeerConnection.onConnectionReceiveData(id, (data) => {
         if (data.dataType === DataType.FILE) {
           message.info('Receiving file ' + data.fileName + ' from ' + id);
+
+          // Create transfer record for received file
+          const transferAction = createTransferRecord(
+            data.fileName || 'Unknown File',
+            data.file?.size || 0,
+            data.fileType || 'application/octet-stream',
+            'received',
+            id,
+          );
+
+          dispatch(transferAction);
+          const transferId = transferAction.payload.id;
+
+          // Download the file
           download(data.file || '', data.fileName || 'fileName', data.fileType);
+
+          // Mark transfer as completed
+          setTimeout(() => {
+            dispatch(completeTransfer(transferId));
+          }, 1000);
         } else if (data.dataType === DataType.MESSAGE) {
           dispatch(
             receiveMessage(id, {

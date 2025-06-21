@@ -1,17 +1,19 @@
-import {configureStore} from '@reduxjs/toolkit'
-import {PeerReducer} from "./peer/peerReducer";
-import {ConnectionReducer} from "./connection/connectionReducer";
+import { configureStore } from '@reduxjs/toolkit';
+import { PeerReducer } from './peer/peerReducer';
+import { ConnectionReducer } from './connection/connectionReducer';
+import transferReducer from './transfer/transferReducer';
 
 export const store = configureStore({
-    reducer: {
-        peer: PeerReducer,
-        connection: ConnectionReducer
-    }
-})
+  reducer: {
+    peer: PeerReducer,
+    connection: ConnectionReducer,
+    transfer: transferReducer,
+  },
+});
 
-window.store = store
+window.store = store;
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>
+export type RootState = ReturnType<typeof store.getState>;
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
-export type AppDispatch = typeof store.dispatch
+export type AppDispatch = typeof store.dispatch;

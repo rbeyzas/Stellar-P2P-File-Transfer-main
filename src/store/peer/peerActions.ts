@@ -7,6 +7,7 @@ import {
   removeConnectionList,
   receiveMessage,
 } from '../connection/connectionActions';
+import { createTransferRecord, completeTransfer, failTransfer } from '../transfer/transferActions';
 import download from 'js-file-download';
 
 export const startPeerSession = (id: string) => ({
@@ -37,7 +38,26 @@ export const startPeer: () => (dispatch: Dispatch) => Promise<void> = () => asyn
       PeerConnection.onConnectionReceiveData(peerId, (data) => {
         if (data.dataType === DataType.FILE) {
           message.info('Receiving file ' + data.fileName + ' from ' + peerId);
+
+          // Create transfer record for received file
+          const transferAction = createTransferRecord(
+            data.fileName || 'Unknown File',
+            data.file?.size || 0,
+            data.fileType || 'application/octet-stream',
+            'received',
+            peerId,
+          );
+
+          dispatch(transferAction);
+          const transferId = transferAction.payload.id;
+
+          // Download the file
           download(data.file || '', data.fileName || 'fileName', data.fileType);
+
+          // Mark transfer as completed
+          setTimeout(() => {
+            dispatch(completeTransfer(transferId));
+          }, 1000); // Small delay to ensure transfer record is created
         } else if (data.dataType === DataType.MESSAGE) {
           dispatch(
             receiveMessage(peerId, {

@@ -24,6 +24,7 @@ import {
   SettingOutlined,
   DisconnectOutlined,
   WalletOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { startPeer, stopPeerSession } from '../store/peer/peerActions';
@@ -34,6 +35,7 @@ import * as Client from 'file-transfer';
 import PasskeyWallet from '../components/PasskeyWallet';
 import TokenSystem from '../components/TokenSystem';
 import PWABanner from '../components/PWABanner';
+import FileSearch from '../components/FileSearch';
 
 import {
   StellarWalletsKit,
@@ -42,6 +44,11 @@ import {
   XBULL_ID,
 } from '@creit.tech/stellar-wallets-kit';
 import ChatInterface from '../components/ChatInterface';
+import {
+  createTransferRecord,
+  completeTransfer,
+  failTransfer,
+} from '../store/transfer/transferActions';
 
 const { Title, Text } = Typography;
 type MenuItem = Required<MenuProps>['items'][number];
@@ -251,10 +258,25 @@ export const HomePage: React.FC = () => {
       message.warning('Please select a connection');
       return;
     }
+
+    let transferId: string | undefined;
+
     try {
       await setSendLoading(true);
       let file = fileList[0] as unknown as File;
       let blob = new Blob([file], { type: file.type });
+
+      // Create transfer record for sent file
+      const transferAction = createTransferRecord(
+        file.name,
+        file.size,
+        file.type,
+        'sent',
+        connection.selectedId,
+      );
+
+      dispatch(transferAction);
+      transferId = transferAction.payload.id;
 
       await PeerConnection.sendConnection(connection.selectedId, {
         dataType: DataType.FILE,
@@ -262,12 +284,21 @@ export const HomePage: React.FC = () => {
         fileName: file.name,
         fileType: file.type,
       });
+
       await setSendLoading(false);
       message.success('File sent successfully!');
+
+      // Mark transfer as completed
+      dispatch(completeTransfer(transferId));
     } catch (err) {
       await setSendLoading(false);
       console.log(err);
       message.error('Error when sending file');
+
+      // Mark transfer as failed if we have a transfer ID
+      if (transferId) {
+        dispatch(failTransfer(transferId, 'Send failed'));
+      }
     }
   };
 
@@ -367,7 +398,7 @@ export const HomePage: React.FC = () => {
                     textTransform: 'uppercase',
                   }}
                 >
-                  {connecting ? 'Connecting...' : 'Connect Traditional Wallet'}
+                  {connecting ? 'Connecting...' : 'Connect Stellar Wallet'}
                 </Button>
               </div>
 
@@ -735,17 +766,29 @@ export const HomePage: React.FC = () => {
                     ),
                   },
                   {
-                    key: 'token-system',
+                    key: 'file-search',
                     label: (
                       <span
                         style={{ fontFamily: "'Anton', sans-serif", textTransform: 'uppercase' }}
                       >
-                        <WalletOutlined style={{ marginRight: 8 }} />
-                        Token System
+                        <SearchOutlined style={{ marginRight: 8 }} />
+                        File Search
                       </span>
                     ),
-                    children: <TokenSystem kit={kit} address={address} />,
+                    children: <FileSearch />,
                   },
+                  // {
+                  //   key: 'token-system',
+                  //   label: (
+                  //     <span
+                  //       style={{ fontFamily: "'Anton', sans-serif", textTransform: 'uppercase' }}
+                  //     >
+                  //       <WalletOutlined style={{ marginRight: 8 }} />
+                  //       Token System
+                  //     </span>
+                  //   ),
+                  //   children: <TokenSystem kit={kit} address={address} />,
+                  // },
                 ]}
                 style={{ marginBottom: 24 }}
               />
